@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using Il2Cpp;
 using MelonLoader;
 using UnityEngine;
@@ -21,11 +19,12 @@ public class CustomNightCore : MelonMod
 {
 
     bool GUIShown = false;
-    int[] SelectedAiLevels = [20,20,20,20,20];
+    int[] SelectedAiLevels = [20, 20, 20, 20, 20, 20, 20];
+    int NightTime = 360;
 
     public override void OnSceneWasInitialized(int buildIndex, string sceneName)
     {
-        if (sceneName == "Game") MelonCoroutines.Start(AIUtil.SetUpAiLevels(SelectedAiLevels));
+        if (sceneName == "Game") MelonCoroutines.Start(AIUtil.SetUpCustomNight(SelectedAiLevels, NightTime));
         if (sceneName != "Lobby" || !MultiplayerManager.Instance.IsHost)
         {
             GUIShown = false;
@@ -34,14 +33,15 @@ public class CustomNightCore : MelonMod
 
     public override void OnUpdate()
     {
-        if (SceneManager.GetActiveScene().name != "Game")
-        if (Input.GetKeyDown(KeyCode.F2)) GUIShown = !GUIShown;
+        if (SceneManager.GetActiveScene().name == "Lobby" && Input.GetKeyDown(KeyCode.F2) && MultiplayerManager.Instance.IsHost) GUIShown = !GUIShown;
+        AIUtil.FixAnimatronicsCooldown(SelectedAiLevels);
     }
 
     public override void OnGUI()
     {
         if (GUIShown) DifficultySelectorGUI();
     }
+
     private void DifficultySelectorGUI()
     {
         float y = 20f;
@@ -51,48 +51,19 @@ public class CustomNightCore : MelonMod
         float x = (Screen.width - width) / 2f;
 
 
-        GUI.Box(new Rect(x, y, width, rowHeight * (ids.Length + 1)), "Custom Night");
+        GUI.Box(new Rect(x, y, width, rowHeight * (ids.Length + 2)), "Custom Night");
         y += rowHeight;
 
         Event e = Event.current;
 
+        GUIUtil.Field("Night Time", ref NightTime, 60, 360, x, ref y, rowHeight, 60, ref e);
         for (int i = 0; i < ids.Length; i++)
         {
             AnimatronicID id = ids[i];
             int index = (int)id;
-            int current = SelectedAiLevels[index];
 
-            GUI.Label(new Rect(x + 10, y, 80, rowHeight), id.ToString());
-
-            Rect minusRect = new Rect(x + 90, y, 25, rowHeight);
-            GUI.Box(minusRect, "-");
-            if (e.type == EventType.MouseDown && minusRect.Contains(e.mousePosition))
-            {
-                SelectedAiLevels[index] = Mathf.Max(-1, current - (Input.GetKey(KeyCode.LeftShift) ? 5 : 1));
-                e.Use();
-            }
-
-            GUI.Label(new Rect(x + 120, y, 40, rowHeight), (current == -1 ? "Default" : current.ToString()) + " AI");
-
-            Rect plusRect = new Rect(x + 160, y, 25, rowHeight);
-            GUI.Box(plusRect, "+");
-            if (e.type == EventType.MouseDown && plusRect.Contains(e.mousePosition))
-            {
-                SelectedAiLevels[index] = Mathf.Min(100, current + (Input.GetKey(KeyCode.LeftShift) ? 5 : 1));
-                e.Use();
-            }
-
-            y += rowHeight;
+            GUIUtil.Field(id.ToString() + " AI", ref SelectedAiLevels[index], -1, 100, x, ref y, rowHeight, 1, ref e);
         }
+
     }
-
-
-
-
-
-
-
-
-
-
 }
