@@ -9,7 +9,7 @@ namespace CustomNight;
 public static class AIUtil
 {
 
-    public static IEnumerator SetUpCustomNight(int[] SelectedAiLevels, int NightTime)
+    public static IEnumerator SetUpCustomNight(int[] SelectedAiLevels, int NightTime = 360)
     {
         if (!MultiplayerManager.Instance.IsHost) yield break;
         while (!GameManager.Instance.isPlaying) yield return null;
@@ -20,6 +20,8 @@ public static class AIUtil
             SetCustomAiLevel(id, SelectedAiLevels[(int)id]);
         }
         SetNightTime(NightTime);
+
+
     }
 
     public static void SetNightTime(int NightTime)
@@ -29,6 +31,8 @@ public static class AIUtil
 
         GameManager.Instance.gameEndTime.Value = NightTime;
     }
+
+
     public static void SetCustomAiLevel(AnimatronicID animid, int AI)
     {
         AnimatronicManager animManager = AnimatronicManager.Instance;
@@ -69,15 +73,21 @@ public static class AIUtil
         }
     }
 
-    public static void FixAnimatronicsCooldown(int[] SelectedAiLevels)
+    public static void OnUpdateFixes(int[] SelectedAiLevels,int InfiniteEnergy)
     {
         if (!GameManager.Instance || !GameManager.Instance.isPlaying) return;
         var anims = AnimatronicManager.Instance.Animatronics;
         foreach (AnimatronicID id in Enum.GetValues(typeof(AnimatronicID)))
         {
-            if (SelectedAiLevels[(int)id] == -1) continue;
+            if (SelectedAiLevels[(int)id] == -1 || SelectedAiLevels[(int)id] == 0) continue;
+
             var anim = anims[(int)id];
-            if (anim.timeLeftToMove.Value > anim.currentMovementWaitTime.Value*3) anim.timeLeftToMove.Value = anim.currentMovementWaitTime.Value*3;
+            if (anim.timeLeftToMove.Value > anim.currentMovementWaitTime.Value * 3) anim.timeLeftToMove.Value = anim.currentMovementWaitTime.Value * 3;
+        }
+
+        if (InfiniteEnergy == 1 && PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value != 800)
+        {
+            PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value = 800;
         }
     }
 }

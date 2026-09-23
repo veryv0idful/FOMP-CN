@@ -21,6 +21,7 @@ public class CustomNightCore : MelonMod
     bool GUIShown = false;
     int[] SelectedAiLevels = [20, 20, 20, 20, 20, 20, 20];
     int NightTime = 360;
+    int InfiniteEnergy = 0;
 
     public override void OnSceneWasInitialized(int buildIndex, string sceneName)
     {
@@ -34,7 +35,7 @@ public class CustomNightCore : MelonMod
     public override void OnUpdate()
     {
         if (SceneManager.GetActiveScene().name == "Lobby" && Input.GetKeyDown(KeyCode.F2) && MultiplayerManager.Instance.IsHost) GUIShown = !GUIShown;
-        AIUtil.FixAnimatronicsCooldown(SelectedAiLevels);
+        AIUtil.OnUpdateFixes(SelectedAiLevels,InfiniteEnergy);
     }
 
     public override void OnGUI()
@@ -51,18 +52,19 @@ public class CustomNightCore : MelonMod
         float x = (Screen.width - width) / 2f;
 
 
-        GUI.Box(new Rect(x, y, width, rowHeight * (ids.Length + 2)), "Custom Night");
+        GUI.Box(new Rect(x, y, width, rowHeight * (ids.Length + 3)), "Custom Night");
         y += rowHeight;
 
         Event e = Event.current;
 
-        GUIUtil.Field("Night Time", ref NightTime, 60, 360, x, ref y, rowHeight, 60, ref e);
+        GUIUtil.Field("Inf energy", ref InfiniteEnergy, 0, 1, x, ref y, rowHeight, 1, true, ref e);
+        GUIUtil.Field("Night Time", ref NightTime, 60, 360 * 5, x, ref y, rowHeight, 60, false, ref e);
         for (int i = 0; i < ids.Length; i++)
         {
             AnimatronicID id = ids[i];
             int index = (int)id;
 
-            GUIUtil.Field(id.ToString() + " AI", ref SelectedAiLevels[index], -1, 100, x, ref y, rowHeight, 1, ref e);
+            GUIUtil.Field(id.ToString() + " AI", ref SelectedAiLevels[index], -1, 100, x, ref y, rowHeight, 1, false, ref e);
         }
 
     }
