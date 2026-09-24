@@ -32,6 +32,12 @@ public static class AIUtil
         GameManager.Instance.gameEndTime.Value = NightTime;
     }
 
+    public static float GetMaxFreddyWind(int FreddyAI)
+    {
+        if (FreddyAI <= 20) return 1;
+        return Mathf.Max(1f - Mathf.Floor(FreddyAI / 20f) / 5f, 0.2f);
+    }
+
 
     public static void SetCustomAiLevel(AnimatronicID animid, int AI)
     {
@@ -54,6 +60,7 @@ public static class AIUtil
     public static float GetMovementCoolDownFromAI(AnimatronicID animid, int AI)
     {
         if (AI == 0) return 999;
+        if (AI == 100) return 0.001f;
         switch (animid)
         {
             case AnimatronicID.Freddy:
@@ -73,16 +80,25 @@ public static class AIUtil
         }
     }
 
-    public static void OnUpdateFixes(int[] SelectedAiLevels,int InfiniteEnergy)
+    public static void OnUpdateFixes(int[] SelectedAiLevels, int InfiniteEnergy)
     {
         if (!GameManager.Instance || !GameManager.Instance.isPlaying) return;
         var anims = AnimatronicManager.Instance.Animatronics;
+
         foreach (AnimatronicID id in Enum.GetValues(typeof(AnimatronicID)))
         {
             if (SelectedAiLevels[(int)id] == -1 || SelectedAiLevels[(int)id] == 0) continue;
 
+            if (id == AnimatronicID.Freddy)
+            {
+                var Wind = GlobalCameraSystem.Instance.freddyMusicWind;
+                Wind.Value = Mathf.Min(GetMaxFreddyWind(SelectedAiLevels[(int)id]), Wind.Value);
+                // Melon<CustomNightCore>.Logger.Msg($"MaxWind = {GetMaxFreddyWind(SelectedAiLevels[(int)id])}");
+            }
+
             var anim = anims[(int)id];
             if (anim.timeLeftToMove.Value > anim.currentMovementWaitTime.Value * 3) anim.timeLeftToMove.Value = anim.currentMovementWaitTime.Value * 3;
+
         }
 
         if (InfiniteEnergy == 1 && PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value != 800)
