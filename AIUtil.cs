@@ -53,7 +53,7 @@ public static class AIUtil
 
         Anims[(int)animid].currentDifficulty.Value = AI;
         Anims[(int)animid].currentMovementWaitTime.Value = GetMovementCoolDownFromAI(animid, AI);
-        Anims[(int)animid].timeLeftToMove.Value = GetMovementCoolDownFromAI(animid, AI) * 3;
+        Anims[(int)animid].timeLeftToMove.Value = Mathf.Min(GetMovementCoolDownFromAI(animid, AI) * 3, 3);
 
     }
 
