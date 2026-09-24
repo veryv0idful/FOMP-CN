@@ -17,7 +17,7 @@ public static class GUIUtil
 
         if (!IsBool)
         {
-            GUI.Label(new Rect(x + 120, y, 40, rowHeight), (Property == 1) ? "Default" : Property.ToString());
+            GUI.Label(new Rect(x + 120, y, 40, rowHeight), (Property == -1) ? "Default" : Property.ToString());
         } else
         {
             GUI.Label(new Rect(x + 120, y, 40, rowHeight), Property == 1 ? "True" : "False");
