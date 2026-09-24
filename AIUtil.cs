@@ -82,7 +82,7 @@ public static class AIUtil
 
     public static void OnUpdateFixes(int[] SelectedAiLevels, int InfiniteEnergy)
     {
-        if (!GameManager.Instance || !GameManager.Instance.isPlaying) return;
+        if (!GameManager.Instance || !GameManager.Instance.isPlaying || !GameManager.Instance.IsHost) return;
         var anims = AnimatronicManager.Instance.Animatronics;
 
         foreach (AnimatronicID id in Enum.GetValues(typeof(AnimatronicID)))
