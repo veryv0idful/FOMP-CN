@@ -53,7 +53,7 @@ public static class AIUtil
 
         Anims[(int)animid].currentDifficulty.Value = AI;
         Anims[(int)animid].currentMovementWaitTime.Value = GetMovementCoolDownFromAI(animid, AI);
-        Anims[(int)animid].timeLeftToMove.Value = Mathf.Min(GetMovementCoolDownFromAI(animid, AI) * 3, 3);
+        Anims[(int)animid].timeLeftToMove.Value = Mathf.Max(GetMovementCoolDownFromAI(animid, AI) * 3, 3);
 
     }
 
@@ -93,7 +93,6 @@ public static class AIUtil
             {
                 var Wind = GlobalCameraSystem.Instance.freddyMusicWind;
                 Wind.Value = Mathf.Min(GetMaxFreddyWind(SelectedAiLevels[(int)id]), Wind.Value);
-                // Melon<CustomNightCore>.Logger.Msg($"MaxWind = {GetMaxFreddyWind(SelectedAiLevels[(int)id])}");
             }
 
             var anim = anims[(int)id];
