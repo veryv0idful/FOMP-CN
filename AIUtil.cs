@@ -97,7 +97,7 @@ public static class AIUtil
             }
 
             var anim = anims[(int)id];
-            if (anim.timeLeftToMove.Value > anim.currentMovementWaitTime.Value * 3) anim.timeLeftToMove.Value = anim.currentMovementWaitTime.Value * 3;
+            if (anim.timeLeftToMove.Value > anim.currentMovementWaitTime.Value * 3 && GameManager.Instance.currentGameTime.Value > 3) anim.timeLeftToMove.Value = anim.currentMovementWaitTime.Value * 3;
 
         }
 
