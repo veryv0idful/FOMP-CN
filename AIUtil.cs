@@ -9,17 +9,17 @@ namespace CustomNight;
 public static class AIUtil
 {
 
-    public static IEnumerator SetUpCustomNight(int[] SelectedAiLevels, int NightTime = 360)
+    public static IEnumerator SetUpCustomNight(CustomNightPanel CustomPanel)
     {
         if (!MultiplayerManager.Instance.IsHost) yield break;
         while (!GameManager.Instance.isPlaying) yield return null;
 
         foreach (AnimatronicID id in Enum.GetValues(typeof(AnimatronicID)))
         {
-            if (SelectedAiLevels[(int)id] == -1) continue;
-            SetCustomAiLevel(id, SelectedAiLevels[(int)id]);
+            if (CustomPanel.SelectedAiLevels[(int)id] == -1) continue;
+            SetCustomAiLevel(id, CustomPanel.SelectedAiLevels[(int)id],CustomPanel);
         }
-        SetNightTime(NightTime);
+        SetNightTime(CustomPanel.NightTime);
 
 
     }
@@ -39,7 +39,7 @@ public static class AIUtil
     }
 
 
-    public static void SetCustomAiLevel(AnimatronicID animid, int AI)
+    public static void SetCustomAiLevel(AnimatronicID animid, int AI,CustomNightPanel CustomPanel)
     {
         AnimatronicManager animManager = AnimatronicManager.Instance;
         var Anims = animManager.Animatronics;
@@ -53,7 +53,7 @@ public static class AIUtil
 
         Anims[(int)animid].currentDifficulty.Value = AI;
         Anims[(int)animid].currentMovementWaitTime.Value = GetMovementCoolDownFromAI(animid, AI);
-        Anims[(int)animid].timeLeftToMove.Value = Mathf.Max(GetMovementCoolDownFromAI(animid, AI) * 3, 3);
+        Anims[(int)animid].timeLeftToMove.Value = Mathf.Max(GetMovementCoolDownFromAI(animid, AI) * 3, CustomPanel.GracePeriod);
 
     }
 
@@ -80,27 +80,27 @@ public static class AIUtil
         }
     }
 
-    public static void OnUpdateFixes(int[] SelectedAiLevels, int InfiniteEnergy)
+    public static void OnUpdateFixes(CustomNightPanel CustomPanel)
     {
         if (!GameManager.Instance || !GameManager.Instance.isPlaying || !GameManager.Instance.IsHost) return;
         var anims = AnimatronicManager.Instance.Animatronics;
 
         foreach (AnimatronicID id in Enum.GetValues(typeof(AnimatronicID)))
         {
-            if (SelectedAiLevels[(int)id] == -1 || SelectedAiLevels[(int)id] == 0) continue;
+            if (CustomPanel.SelectedAiLevels[(int)id] == -1 || CustomPanel.SelectedAiLevels[(int)id] == 0) continue;
 
             if (id == AnimatronicID.Freddy)
             {
                 var Wind = GlobalCameraSystem.Instance.freddyMusicWind;
-                Wind.Value = Mathf.Min(GetMaxFreddyWind(SelectedAiLevels[(int)id]), Wind.Value);
+                Wind.Value = Mathf.Min(GetMaxFreddyWind(CustomPanel.SelectedAiLevels[(int)id]), Wind.Value);
             }
 
             var anim = anims[(int)id];
-            if (anim.timeLeftToMove.Value > anim.currentMovementWaitTime.Value * 3 && GameManager.Instance.currentGameTime.Value > 3) anim.timeLeftToMove.Value = anim.currentMovementWaitTime.Value * 3;
+            if (anim.timeLeftToMove.Value > anim.currentMovementWaitTime.Value * 3 && GameManager.Instance.currentGameTime.Value > CustomPanel.GracePeriod) anim.timeLeftToMove.Value = anim.currentMovementWaitTime.Value * 3;
 
         }
 
-        if (InfiniteEnergy == 1 && PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value != 800)
+        if (CustomPanel.InfiniteEnergy == 1 && PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value != 800)
         {
             PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value = 800;
         }

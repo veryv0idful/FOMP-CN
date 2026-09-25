@@ -18,54 +18,27 @@ public static class BuildInfo
 public class CustomNightCore : MelonMod
 {
 
-    bool GUIShown = false;
-    int[] SelectedAiLevels = [20, 20, 20, 20, 20, 20, 20];
-    int NightTime = 360;
-    int InfiniteEnergy = 0;
+
+    CustomNightPanel CustomPanel = new();
 
     public override void OnSceneWasInitialized(int buildIndex, string sceneName)
     {
-        if (sceneName == "Game") MelonCoroutines.Start(AIUtil.SetUpCustomNight(SelectedAiLevels, NightTime));
+        if (sceneName == "Game") MelonCoroutines.Start(AIUtil.SetUpCustomNight(CustomPanel));
         if (sceneName != "Lobby" || !MultiplayerManager.Instance.IsHost)
         {
-            GUIShown = false;
+            CustomPanel.Shown = false;
         }
     }
 
     public override void OnUpdate()
     {
-        if (SceneManager.GetActiveScene().name == "Lobby" && Input.GetKeyDown(KeyCode.F2) && MultiplayerManager.Instance.IsHost) GUIShown = !GUIShown;
-        AIUtil.OnUpdateFixes(SelectedAiLevels, InfiniteEnergy);
+        if (SceneManager.GetActiveScene().name == "Lobby" && Input.GetKeyDown(KeyCode.F2) && MultiplayerManager.Instance.IsHost) CustomPanel.ToggleShown();
+        AIUtil.OnUpdateFixes(CustomPanel);
     }
 
     public override void OnGUI()
     {
-        if (GUIShown) DifficultySelectorGUI();
+        if (CustomPanel.Shown) CustomPanel.Draw();
     }
 
-    private void DifficultySelectorGUI()
-    {
-        float y = 20f;
-        float rowHeight = 25f;
-        var ids = (AnimatronicID[])Enum.GetValues(typeof(AnimatronicID));
-        float width = 300f;
-        float x = (Screen.width - width) / 2f;
-
-
-        GUI.Box(new Rect(x, y, width, rowHeight * (ids.Length + 3)), "Custom Night");
-        y += rowHeight;
-
-        Event e = Event.current;
-
-        GUIUtil.Field("Inf energy", ref InfiniteEnergy, 0, 1, x, ref y, rowHeight, 1, true, ref e);
-        GUIUtil.Field("Night Time", ref NightTime, 60, 360 * 5, x, ref y, rowHeight, 60, false, ref e);
-        for (int i = 0; i < ids.Length; i++)
-        {
-            AnimatronicID id = ids[i];
-            int index = (int)id;
-
-            GUIUtil.Field(id.ToString() + " AI", ref SelectedAiLevels[index], -1, 100, x, ref y, rowHeight, 1, false, ref e);
-        }
-
-    }
 }
