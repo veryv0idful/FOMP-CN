@@ -1,14 +1,11 @@
 using System.Collections;
-using System; // Fixes CS0103: 'Enum' does not exist in the current context
+using System;
+using UnityEngine;
+
 #if MELON
 using Il2Cpp;
-using MelonLoader;
-using UnityEngine;
 #elif BEPIN
-using BepInEx;
-using BepInEx.Unity.IL2CPP;
-using Unity.Netcode;
-using UnityEngine;
+
 #endif
 
 
@@ -27,17 +24,26 @@ public static class AIUtil
             if (CustomNightPanel.SelectedAiLevels[(int)id] == -1) continue;
             SetCustomAiLevel(id, CustomNightPanel.SelectedAiLevels[(int)id]);
         }
-        SetNightTime(CustomNightPanel.NightTime);
+        SetNightProperties();
 
 
     }
 
-    public static void SetNightTime(int NightTime)
+    public static void SetNightProperties()
     {
         if (!MultiplayerManager.Instance.IsHost) return;
         if (!GameManager.Instance.isPlaying) return;
 
-        GameManager.Instance.gameEndTime.Value = NightTime;
+        GameManager.Instance.gameEndTime.Value = CustomNightPanel.NightTime*60;
+
+
+        foreach (var Role in PlayerRoleManager.Instance.participatingPlayers)
+        {
+            if (Role == PlayerRoles.PurpleGuy || Role == PlayerRoles.None) continue;
+            var PlayerBehave = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
+            PlayerBehave.currentPower.Value = CustomNightPanel.StartingPower;
+        };
+
     }
 
     public static float GetMaxFreddyWind(int FreddyAI)
@@ -56,6 +62,11 @@ public static class AIUtil
         {
             Anims[(int)animid].Disable();
             return;
+        }
+
+        if (animid == AnimatronicID.Foxy)
+        {
+            Anims[(int)animid]?.TryCast<Foxy>().currentAttackAttempt.Value = Mathf.Max((int)Mathf.Floor(AI/100*8)-1,0);
         }
 
         Anims[(int)animid].currentDifficulty.Value = AI;
@@ -113,6 +124,13 @@ public static class AIUtil
         {
             PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value = 800;
         }
+
+        foreach (var Role in PlayerRoleManager.Instance.participatingPlayers)
+        {
+            if (Role == PlayerRoles.PurpleGuy || Role == PlayerRoles.None) continue;
+            var PlayerBehave = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
+            PlayerBehave.currentPower.Value = Mathf.Min(PlayerBehave.currentPower.Value,CustomNightPanel.MaxPower);
+        };
     }
 }
 

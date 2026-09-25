@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -8,17 +7,14 @@ using UnityEngine.SceneManagement;
 using Il2Cpp;
 using MelonLoader;
 #elif BEPIN
-using BepInEx;
-using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
-using Unity.Netcode;
 #endif
 
 namespace CustomNight;
 
-public class CustomPanelBehaviour : MonoBehaviour
+public class CustomNightBehaviour : MonoBehaviour
 {
-    public CustomPanelBehaviour(IntPtr handle) : base(handle) { }
+    public CustomNightBehaviour(IntPtr handle) : base(handle) { }
 
     private void Awake()
     {
@@ -29,7 +25,7 @@ public class CustomPanelBehaviour : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F2) && SceneManager.GetActiveScene().name == "Lobby")
         {
-            if (CheckIsHost())
+            if (MultiplayerManager.Instance && MultiplayerManager.Instance.IsHost)
             {
                 CustomNightPanel.ToggleShown();
             }
@@ -53,7 +49,7 @@ public class CustomPanelBehaviour : MonoBehaviour
             StartGameCoroutine();
         }
 
-        if (scene.name != "Lobby" || !CheckIsHost())
+        if (scene.name != "Lobby" || !MultiplayerManager.Instance || !MultiplayerManager.Instance.IsHost)
         {
             CustomNightPanel.Shown = false;
         }
@@ -66,17 +62,5 @@ public class CustomPanelBehaviour : MonoBehaviour
 #elif MELON
         MelonCoroutines.Start(AIUtil.SetUpCustomNight());
 #endif
-    }
-
-    private bool CheckIsHost()
-    {
-        try
-        {
-            return MultiplayerManager.Instance != null && MultiplayerManager.Instance.IsHost;
-        }
-        catch
-        {
-            return false;
-        }
     }
 }

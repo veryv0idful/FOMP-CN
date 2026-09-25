@@ -5,11 +5,20 @@ using UnityEngine;
 public static class CustomNightPanel
 {
     public static int InfiniteEnergy = 0;
-    public static int NightTime = 360;
+    public static int NightTime = 6;
     public static int[] SelectedAiLevels = [20, 20, 20, 20, 20, 20];
     public static bool Shown = false;
+    public static int StartingPower = 100;
+    public static int MaxPower = 100;
 
     public static int GracePeriod = 7;
+
+    private static float PressStartTime;
+    private static bool IsMouseDown;
+    private static float LastDuration;
+    private static bool FirstHold;
+
+    private static AudioClip Blip;
 
     public static CPanelTab CurrentPanel = CPanelTab.AI;
 
@@ -21,10 +30,43 @@ public static class CustomNightPanel
 
     static bool Button(string Content, Rect rect, Event e)
     {
+        if (Blip == null) Blip = ResourceUtil.GetEmbeddedAudioClip("CustomNight.assets.blip.wav");
+
         GUI.Box(rect, Content);
+        if (e.type == EventType.MouseDown && e.button == 0)
+        {
+            PressStartTime = Time.realtimeSinceStartup;
+            IsMouseDown = true;
+            FirstHold = true;
+        }
+
+        if (e.type == EventType.MouseUp && e.button == 0 && IsMouseDown)
+        {
+            IsMouseDown = false;
+            LastDuration = Time.realtimeSinceStartup - PressStartTime;
+            FirstHold = true;
+        }
+
+        float currentHold = IsMouseDown ? (Time.realtimeSinceStartup - PressStartTime) : LastDuration;
+
+        if (currentHold > 0.09 && rect.Contains(e.mousePosition) && !FirstHold)
+        {
+            PressStartTime = Time.realtimeSinceStartup;
+            ResourceUtil.PlayAudioClip(Blip);
+            return true;
+        }
+
+        if (currentHold > 0.5 && IsMouseDown && FirstHold)
+        {
+            PressStartTime = Time.realtimeSinceStartup;
+            FirstHold = false;
+        }
+
+        
         if (e.type == EventType.MouseDown && rect.Contains(e.mousePosition))
         {
             e.Use();
+            ResourceUtil.PlayAudioClip(Blip);
             return true;
         }
         return false;
@@ -32,7 +74,7 @@ public static class CustomNightPanel
 
     static void Field(string Name, ref int Property, int min, int max, float x, ref float y, float rowHeight, int increments, bool IsBool, ref Event e)
     {
-        GUI.Label(new Rect(x + 10, y, 80, rowHeight), Name);
+        GUI.Label(new Rect(x + 10, y, 100, rowHeight), Name);
 
         float RightShift = 90;
 
@@ -112,10 +154,17 @@ public static class CustomNightPanel
             GUI.Box(new Rect(x, y, width, rowHeight * (Ids.Length + 2)), "Custom Night - GENERAL");
             y += rowHeight * 2;
             Field("Inf energy", ref InfiniteEnergy, 0, 1, x, ref y, rowHeight, 1, true, ref e);
-            Field("Night time", ref NightTime, 60, 360 * 5, x, ref y, rowHeight, 60, false, ref e);
+            Field("Night minutes", ref NightTime, 1, 360, x, ref y, rowHeight, 1, false, ref e);
             Field("Grace period", ref GracePeriod, 1, 30, x, ref y, rowHeight, 1, false, ref e);
         }
 
+        if (CurrentPanel == CPanelTab.Power)
+        {
+            GUI.Box(new Rect(x, y, width, rowHeight * (Ids.Length + 2)), "Custom Night - POWER");
+            y += rowHeight * 2;
+            Field("Starting power", ref StartingPower, 1, 100, x, ref y, rowHeight, 1, false, ref e);
+            Field("Max power", ref MaxPower, 1, 100, x, ref y, rowHeight, 1, false, ref e);
+        } 
 
 
 
@@ -124,7 +173,8 @@ public static class CustomNightPanel
     public enum CPanelTab
     {
         AI,
-        General
+        General,
+        Power
     }
 }
 

@@ -50,6 +50,9 @@
       <HintPath>/home/void/Games/fnaf-online/MelonLoader/Il2CppAssemblies/UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>/home/void/Games/fnaf-online/MelonLoader/Il2CppAssemblies/UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 
@@ -105,6 +108,9 @@
       <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='MELON' Or '$(Configuration)'=='Debug'">
@@ -124,5 +130,9 @@
   <Target Name="CopyToModsBEPIN" AfterTargets="Build" Condition="'$(Configuration)'=='BEPIN' Or '$(Configuration)'=='Release'">
     <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="/home/void/Games/fnaf-online-BEPINEX/BepInEx/plugins/" />
   </Target>
+
+  <ItemGroup>
+    <EmbeddedResource Include="assets\blip.wav" />
+  </ItemGroup>
 
 </Project>

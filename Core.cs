@@ -1,14 +1,10 @@
-﻿using System.Reflection;
-using HarmonyLib;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿
 
 
 
 #if MELON
-
+using UnityEngine;
 using MelonLoader;
-using Il2Cpp;
 
 [assembly: MelonInfo(typeof(CustomNight.CustomNightCore), CustomNight.BuildInfo.Name, CustomNight.BuildInfo.Version, CustomNight.BuildInfo.Author)]
 
@@ -26,30 +22,30 @@ public static class BuildInfo
     public const string Name = "CustomNight"; // Name of the Mod.
     public const string Description = "Adds custom night."; // Description for the Mod. 
     public const string Author = "BrightVoid"; // Author of the Mod.
-    public const string Version = "1.5.0"; // Version of the Mod.
+    public const string Version = "1.6.0"; // Version of the Mod.
 }
 
 
 #if MELON
-    public class CustomNightCore : MelonMod
+public class CustomNightCore : MelonMod
+{
+    public override void OnInitializeMelon()
     {
-        public override void OnInitializeMelon()
-        {
-            Il2CppInterop.Runtime.Injection.ClassInjector.RegisterTypeInIl2Cpp<CustomPanelBehaviour>();
+        Il2CppInterop.Runtime.Injection.ClassInjector.RegisterTypeInIl2Cpp<CustomNightBehaviour>();
 
-            var go = new GameObject("[CustomNight_Runner]");
-            UnityEngine.Object.DontDestroyOnLoad(go);
-            go.AddComponent<CustomPanelBehaviour>();
-        }
+        var go = new GameObject("[CustomNight_Runner]");
+        UnityEngine.Object.DontDestroyOnLoad(go);
+        go.AddComponent<CustomNightBehaviour>();
     }
+}
 
 #elif BEPIN
-    [BepInPlugin("com.customnight.mod", "CustomNight", BuildInfo.Version)]
-    public class CustomNightCore : BasePlugin
+[BepInPlugin("com.customnight.mod", "CustomNight", BuildInfo.Version)]
+public class CustomNightCore : BasePlugin
+{
+    public override void Load()
     {
-        public override void Load()
-        {
-            AddComponent<CustomPanelBehaviour>();
-        }
+        AddComponent<CustomNightBehaviour>();
     }
+}
 #endif
