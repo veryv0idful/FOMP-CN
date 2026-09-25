@@ -1,9 +1,23 @@
-﻿using System;
-using Il2Cpp;
-using MelonLoader;
+﻿using System.Reflection;
+using HarmonyLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+
+
+#if MELON
+
+using MelonLoader;
+using Il2Cpp;
+
 [assembly: MelonInfo(typeof(CustomNight.CustomNightCore), CustomNight.BuildInfo.Name, CustomNight.BuildInfo.Version, CustomNight.BuildInfo.Author)]
+
+#elif BEPIN
+
+using BepInEx;
+using BepInEx.Unity.IL2CPP;
+
+#endif
 
 namespace CustomNight;
 
@@ -12,33 +26,30 @@ public static class BuildInfo
     public const string Name = "CustomNight"; // Name of the Mod.
     public const string Description = "Adds custom night."; // Description for the Mod. 
     public const string Author = "BrightVoid"; // Author of the Mod.
-    public const string Version = "1.4.1"; // Version of the Mod.
+    public const string Version = "1.5.0"; // Version of the Mod.
 }
 
-public class CustomNightCore : MelonMod
-{
 
-
-    CustomNightPanel CustomPanel = new();
-
-    public override void OnSceneWasInitialized(int buildIndex, string sceneName)
+#if MELON
+    public class CustomNightCore : MelonMod
     {
-        if (sceneName == "Game") MelonCoroutines.Start(AIUtil.SetUpCustomNight(CustomPanel));
-        if (sceneName != "Lobby" || !MultiplayerManager.Instance.IsHost)
+        public override void OnInitializeMelon()
         {
-            CustomPanel.Shown = false;
+            Il2CppInterop.Runtime.Injection.ClassInjector.RegisterTypeInIl2Cpp<CustomPanelBehaviour>();
+
+            var go = new GameObject("[CustomNight_Runner]");
+            UnityEngine.Object.DontDestroyOnLoad(go);
+            go.AddComponent<CustomPanelBehaviour>();
         }
     }
 
-    public override void OnUpdate()
+#elif BEPIN
+    [BepInPlugin("com.customnight.mod", "CustomNight", BuildInfo.Version)]
+    public class CustomNightCore : BasePlugin
     {
-        if (SceneManager.GetActiveScene().name == "Lobby" && Input.GetKeyDown(KeyCode.F2) && MultiplayerManager.Instance.IsHost) CustomPanel.ToggleShown();
-        AIUtil.OnUpdateFixes(CustomPanel);
+        public override void Load()
+        {
+            AddComponent<CustomPanelBehaviour>();
+        }
     }
-
-    public override void OnGUI()
-    {
-        if (CustomPanel.Shown) CustomPanel.Draw();
-    }
-
-}
+#endif

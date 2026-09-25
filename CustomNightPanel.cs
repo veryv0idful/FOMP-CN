@@ -2,28 +2,24 @@ using System;
 using CustomNight;
 using UnityEngine;
 
-public class CustomNightPanel
+public static class CustomNightPanel
 {
-    public int InfiniteEnergy = 0;
-    public int NightTime = 360;
-    public int[] SelectedAiLevels = [20, 20, 20, 20, 20, 20];
-    public bool Shown = false;
+    public static int InfiniteEnergy = 0;
+    public static int NightTime = 360;
+    public static int[] SelectedAiLevels = [20, 20, 20, 20, 20, 20];
+    public static bool Shown = false;
 
-    public int GracePeriod = 7;
+    public static int GracePeriod = 7;
 
-    public CPanelTab CurrentPanel = CPanelTab.AI;
+    public static CPanelTab CurrentPanel = CPanelTab.AI;
 
 
 
     private static readonly AnimatronicID[] Ids =
         (AnimatronicID[])Enum.GetValues(typeof(AnimatronicID));
 
-    public CustomNightPanel()
-    {
 
-    }
-
-    bool Button(string Content, Rect rect, Event e)
+    static bool Button(string Content, Rect rect, Event e)
     {
         GUI.Box(rect, Content);
         if (e.type == EventType.MouseDown && rect.Contains(e.mousePosition))
@@ -34,7 +30,7 @@ public class CustomNightPanel
         return false;
     }
 
-    void Field(string Name, ref int Property, int min, int max, float x, ref float y, float rowHeight, int increments, bool IsBool, ref Event e)
+    static void Field(string Name, ref int Property, int min, int max, float x, ref float y, float rowHeight, int increments, bool IsBool, ref Event e)
     {
         GUI.Label(new Rect(x + 10, y, 80, rowHeight), Name);
 
@@ -47,15 +43,8 @@ public class CustomNightPanel
             e.Use();
         }
 
-        if (!IsBool)
-        {
-            GUI.Label(new Rect(x + 120 + RightShift, y, 40, rowHeight), (Property == -1) ? "Default" : Property.ToString());
-        }
-        else
-        {
-            GUI.Label(new Rect(x + 120 + RightShift, y, 40, rowHeight), Property == 1 ? "True" : "False");
-        }
-
+        if (!IsBool) GUI.Label(new Rect(x + 120 + RightShift, y, 40, rowHeight), (Property == -1) ? "Default" : Property.ToString());
+        else GUI.Label(new Rect(x + 120 + RightShift, y, 40, rowHeight), Property == 1 ? "True" : "False");
 
 
         if (Button("+", new Rect(x + 160 + RightShift, y, 25, rowHeight), e))
@@ -67,12 +56,12 @@ public class CustomNightPanel
         y += rowHeight;
     }
 
-    public void ToggleShown()
+    static public void ToggleShown()
     {
         Shown = !Shown;
     }
 
-    public void Draw()
+    static public void Draw()
     {
         float y = 20f;
         float rowHeight = 25f;

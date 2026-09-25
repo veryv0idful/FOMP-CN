@@ -1,25 +1,33 @@
-using System;
 using System.Collections;
+using System; // Fixes CS0103: 'Enum' does not exist in the current context
+#if MELON
 using Il2Cpp;
 using MelonLoader;
 using UnityEngine;
+#elif BEPIN
+using BepInEx;
+using BepInEx.Unity.IL2CPP;
+using Unity.Netcode;
+using UnityEngine;
+#endif
+
 
 namespace CustomNight;
 
 public static class AIUtil
 {
 
-    public static IEnumerator SetUpCustomNight(CustomNightPanel CustomPanel)
+    public static IEnumerator SetUpCustomNight()
     {
         if (!MultiplayerManager.Instance.IsHost) yield break;
         while (!GameManager.Instance.isPlaying) yield return null;
 
         foreach (AnimatronicID id in Enum.GetValues(typeof(AnimatronicID)))
         {
-            if (CustomPanel.SelectedAiLevels[(int)id] == -1) continue;
-            SetCustomAiLevel(id, CustomPanel.SelectedAiLevels[(int)id],CustomPanel);
+            if (CustomNightPanel.SelectedAiLevels[(int)id] == -1) continue;
+            SetCustomAiLevel(id, CustomNightPanel.SelectedAiLevels[(int)id]);
         }
-        SetNightTime(CustomPanel.NightTime);
+        SetNightTime(CustomNightPanel.NightTime);
 
 
     }
@@ -39,11 +47,10 @@ public static class AIUtil
     }
 
 
-    public static void SetCustomAiLevel(AnimatronicID animid, int AI,CustomNightPanel CustomPanel)
+    public static void SetCustomAiLevel(AnimatronicID animid, int AI)
     {
         AnimatronicManager animManager = AnimatronicManager.Instance;
         var Anims = animManager.Animatronics;
-        Melon<CustomNightCore>.Logger.Msg($"Set {animid.ToString()} To AI:{AI} and MOVE:{GetMovementCoolDownFromAI(animid, AI)}s");
 
         if (AI == 0)
         {
@@ -53,7 +60,7 @@ public static class AIUtil
 
         Anims[(int)animid].currentDifficulty.Value = AI;
         Anims[(int)animid].currentMovementWaitTime.Value = GetMovementCoolDownFromAI(animid, AI);
-        Anims[(int)animid].timeLeftToMove.Value = Mathf.Max(GetMovementCoolDownFromAI(animid, AI) * 3, CustomPanel.GracePeriod);
+        Anims[(int)animid].timeLeftToMove.Value = Mathf.Max(GetMovementCoolDownFromAI(animid, AI) * 3, CustomNightPanel.GracePeriod);
 
     }
 
@@ -80,27 +87,29 @@ public static class AIUtil
         }
     }
 
-    public static void OnUpdateFixes(CustomNightPanel CustomPanel)
+    public static void OnUpdateFixes()
     {
         if (!GameManager.Instance || !GameManager.Instance.isPlaying || !GameManager.Instance.IsHost) return;
         var anims = AnimatronicManager.Instance.Animatronics;
 
+
+
         foreach (AnimatronicID id in Enum.GetValues(typeof(AnimatronicID)))
         {
-            if (CustomPanel.SelectedAiLevels[(int)id] == -1 || CustomPanel.SelectedAiLevels[(int)id] == 0) continue;
+            if (CustomNightPanel.SelectedAiLevels[(int)id] == -1 || CustomNightPanel.SelectedAiLevels[(int)id] == 0) continue;
 
             if (id == AnimatronicID.Freddy)
             {
                 var Wind = GlobalCameraSystem.Instance.freddyMusicWind;
-                Wind.Value = Mathf.Min(GetMaxFreddyWind(CustomPanel.SelectedAiLevels[(int)id]), Wind.Value);
+                Wind.Value = Mathf.Min(GetMaxFreddyWind(CustomNightPanel.SelectedAiLevels[(int)id]), Wind.Value);
             }
 
             var anim = anims[(int)id];
-            if (anim.timeLeftToMove.Value > anim.currentMovementWaitTime.Value * 3 && GameManager.Instance.currentGameTime.Value > CustomPanel.GracePeriod) anim.timeLeftToMove.Value = anim.currentMovementWaitTime.Value * 3;
+            if (anim.timeLeftToMove.Value > anim.currentMovementWaitTime.Value * 3 && GameManager.Instance.currentGameTime.Value > CustomNightPanel.GracePeriod) anim.timeLeftToMove.Value = anim.currentMovementWaitTime.Value * 3;
 
         }
 
-        if (CustomPanel.InfiniteEnergy == 1 && PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value != 800)
+        if (CustomNightPanel.InfiniteEnergy == 1 && PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value != 800)
         {
             PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value = 800;
         }
