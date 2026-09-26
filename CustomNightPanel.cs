@@ -4,14 +4,13 @@ using UnityEngine;
 
 public static class CustomNightPanel
 {
-    public static int InfiniteEnergy = 0;
-    public static int NightTime = 6;
-    public static int[] SelectedAiLevels = [20, 20, 20, 20, 20, 20];
+    public static float InfiniteEnergy = 0;
+    public static float NightTime = 6;
+    public static float[] SelectedAiLevels = [20, 20, 20, 20, 20, 20];
     public static bool Shown = false;
-    public static int StartingPower = 100;
-    public static int MaxPower = 100;
-
-    public static int GracePeriod = 7;
+    public static float StartingPower = 100;
+    public static float MaxPower = 100;
+    public static float GracePeriod = 7;
 
     private static float PressStartTime;
     private static bool IsMouseDown;
@@ -62,7 +61,6 @@ public static class CustomNightPanel
             FirstHold = false;
         }
 
-        
         if (e.type == EventType.MouseDown && rect.Contains(e.mousePosition))
         {
             e.Use();
@@ -72,9 +70,9 @@ public static class CustomNightPanel
         return false;
     }
 
-    static void Field(string Name, ref int Property, int min, int max, float x, ref float y, float rowHeight, int increments, bool IsBool, ref Event e)
+    static void Field(string Name, ref float Property, float min, int max, float x, ref float y, float rowHeight, float increments, bool IsBool, ref Event e)
     {
-        GUI.Label(new Rect(x + 10, y, 100, rowHeight), Name);
+        GUI.Label(new Rect(x + 10, y, 150, rowHeight), Name);
 
         float RightShift = 90;
 
@@ -157,7 +155,7 @@ public static class CustomNightPanel
             y += rowHeight * 2;
             Field("Starting power", ref StartingPower, 1, 100, x, ref y, rowHeight, 1, false, ref e);
             Field("Max power", ref MaxPower, 1, 100, x, ref y, rowHeight, 1, false, ref e);
-        } 
+        }
 
 
 

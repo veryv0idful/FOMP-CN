@@ -22,7 +22,7 @@ public static class AIUtil
         foreach (AnimatronicID id in Enum.GetValues(typeof(AnimatronicID)))
         {
             if (CustomNightPanel.SelectedAiLevels[(int)id] == -1) continue;
-            SetCustomAiLevel(id, CustomNightPanel.SelectedAiLevels[(int)id]);
+            SetCustomAiLevel(id, (int)CustomNightPanel.SelectedAiLevels[(int)id]);
         }
         SetNightProperties();
 
@@ -46,14 +46,14 @@ public static class AIUtil
 
     }
 
-    public static float GetMaxFreddyWind(int FreddyAI)
+    public static float GetMaxFreddyWind(float FreddyAI)
     {
         if (FreddyAI <= 20) return 1;
         return Mathf.Max(1f - Mathf.Floor(FreddyAI / 20f) / 5f, 0.2f);
     }
 
 
-    public static void SetCustomAiLevel(AnimatronicID animid, int AI)
+    public static void SetCustomAiLevel(AnimatronicID animid, float AI)
     {
         AnimatronicManager animManager = AnimatronicManager.Instance;
         var Anims = animManager.Animatronics;
@@ -75,7 +75,7 @@ public static class AIUtil
 
     }
 
-    public static float GetMovementCoolDownFromAI(AnimatronicID animid, int AI)
+    public static float GetMovementCoolDownFromAI(AnimatronicID animid, float AI)
     {
         if (AI == 0) return 999;
         if (AI == 100) return 0.001f;

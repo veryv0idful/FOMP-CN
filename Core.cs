@@ -12,7 +12,6 @@ using MelonLoader;
 
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
-
 #endif
 
 namespace CustomNight;
