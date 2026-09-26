@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using System.Collections;
+
 
 #if MELON
 using Il2Cpp;
@@ -46,7 +48,7 @@ public class CustomNightBehaviour : MonoBehaviour
     {
         if (scene.name == "Game")
         {
-            StartGameCoroutine();
+            StartCoroutine(AIUtil.SetUpCustomNight());
         }
 
         if (scene.name != "Lobby" || !MultiplayerManager.Instance || !MultiplayerManager.Instance.IsHost)
@@ -55,12 +57,12 @@ public class CustomNightBehaviour : MonoBehaviour
         }
     }
 
-    private void StartGameCoroutine()
+    private void StartCoroutine(IEnumerator Coroutine)
     {
 #if BEPIN
-        StartCoroutine(AIUtil.SetUpCustomNight().WrapToIl2Cpp());
+        StartCoroutine(Coroutine.WrapToIl2Cpp());
 #elif MELON
-        MelonCoroutines.Start(AIUtil.SetUpCustomNight());
+        MelonCoroutines.Start(Coroutine);
 #endif
     }
 }

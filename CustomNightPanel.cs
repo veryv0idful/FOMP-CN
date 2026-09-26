@@ -79,20 +79,18 @@ public static class CustomNightPanel
         float RightShift = 90;
 
 
-        if (Button("-", new Rect(x + 90 + RightShift, y, 25, rowHeight), e))
+        if (Button("-", new Rect(x + 80 + RightShift, y, 25, rowHeight), e))
         {
             Property = Mathf.Max(min, Property - (Input.GetKey(KeyCode.LeftShift) ? increments * 5 : increments));
-            e.Use();
         }
 
-        if (!IsBool) GUI.Label(new Rect(x + 120 + RightShift, y, 40, rowHeight), (Property == -1) ? "Default" : Property.ToString());
-        else GUI.Label(new Rect(x + 120 + RightShift, y, 40, rowHeight), Property == 1 ? "True" : "False");
+        if (!IsBool) GUI.Label(new Rect(x + 110 + RightShift, y, 50, rowHeight), (Property == -1) ? "Default" : Property.ToString());
+        else GUI.Label(new Rect(x + 120 + RightShift, y, 50, rowHeight), Property == 1 ? "True" : "False");
 
 
         if (Button("+", new Rect(x + 160 + RightShift, y, 25, rowHeight), e))
         {
             Property = Mathf.Min(max, Property + (Input.GetKey(KeyCode.LeftShift) ? increments * 5 : increments));
-            e.Use();
         }
 
         y += rowHeight;
@@ -131,13 +129,8 @@ public static class CustomNightPanel
             CurrentPanel = values[index];
         }
 
-
-
-
-
         if (CurrentPanel == CPanelTab.AI)
         {
-
             GUI.Box(new Rect(x, y, width, rowHeight * (Ids.Length + 2)), "Custom Night - AI");
             y += rowHeight * 2;
             for (int i = 0; i < Ids.Length; i++)
