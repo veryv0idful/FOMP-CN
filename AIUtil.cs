@@ -16,7 +16,7 @@ public static class AIUtil
 
     public static IEnumerator SetUpCustomNight()
     {
-        if (!MultiplayerManager.Instance.IsHost) yield break;
+        if (!IsLocalPlayerHost()) yield break;
         while (!GameManager.Instance.isPlaying) yield return null;
 
         foreach (AnimatronicID id in Enum.GetValues(typeof(AnimatronicID)))
@@ -25,25 +25,43 @@ public static class AIUtil
             SetCustomAiLevel(id, (int)CustomNightPanel.SelectedAiLevels[(int)id]);
         }
         SetNightProperties();
-
-
     }
 
     public static void SetNightProperties()
     {
-        if (!MultiplayerManager.Instance.IsHost) return;
-        if (!GameManager.Instance.isPlaying) return;
+        if (!IsPlaying() || !IsLocalPlayerHost()) return;
 
-        GameManager.Instance.gameEndTime.Value = CustomNightPanel.NightTime*60;
+         SetGameEndTime(CustomNightPanel.NightTime * 60);
 
 
         foreach (var Role in PlayerRoleManager.Instance.participatingPlayers)
         {
             if (Role == PlayerRoles.PurpleGuy || Role == PlayerRoles.None) continue;
-            var PlayerBehave = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
-            PlayerBehave.currentPower.Value = CustomNightPanel.StartingPower;
+            var Player = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
+            SetPower(Player,CustomNightPanel.StartingPower);
         };
 
+    }
+
+    public static void SetPower(PlayerBehaviour Player,float Power)
+    {
+        Player.currentPower.Value = Power;
+    }
+
+    public static void SetGameEndTime (float EndTime)
+    {
+        GameManager.Instance.gameEndTime.Value = EndTime;
+    }
+
+    public static bool IsLocalPlayerHost()
+    {
+        if (!MultiplayerManager.Instance|| !MultiplayerManager.Instance.IsHost) return false;
+        return true;
+    }
+
+    public static bool IsPlaying()
+    {
+        return GameManager.Instance && GameManager.Instance.isPlaying;
     }
 
     public static float GetMaxFreddyWind(float FreddyAI)
@@ -100,7 +118,7 @@ public static class AIUtil
 
     public static void OnUpdateFixes()
     {
-        if (!GameManager.Instance || !GameManager.Instance.isPlaying || !GameManager.Instance.IsHost) return;
+        if (!IsPlaying() || !IsLocalPlayerHost()) return;
         var anims = AnimatronicManager.Instance.Animatronics;
 
 
