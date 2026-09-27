@@ -31,13 +31,15 @@ public static class AIUtil
     {
         if (!IsPlaying() || !IsLocalPlayerHost()) return;
 
-         SetGameEndTime(CustomNightPanel.NightTime * 60);
-
+        SetGameEndTime(CustomNightPanel.NightTime * 60);
+        SetReservePower(CustomNightPanel.StartingReserveEnergy);
 
         foreach (var Role in PlayerRoleManager.Instance.participatingPlayers)
         {
             if (Role == PlayerRoles.PurpleGuy || Role == PlayerRoles.None) continue;
+            
             var Player = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
+
             SetPower(Player,CustomNightPanel.StartingPower);
         };
 
@@ -68,6 +70,12 @@ public static class AIUtil
     {
         if (FreddyAI <= 20) return 1;
         return Mathf.Max(1f - Mathf.Floor(FreddyAI / 20f) / 5f, 0.2f);
+    }
+
+    public static void SetReservePower(float Reserve)
+    {
+        if (!IsPlaying() || !IsLocalPlayerHost()) return;
+        PowerGenerator.Instance.reserve.Value = Reserve;
     }
 
 
@@ -121,6 +129,12 @@ public static class AIUtil
         if (!IsPlaying() || !IsLocalPlayerHost()) return;
         var anims = AnimatronicManager.Instance.Animatronics;
 
+        if (PowerGenerator.Instance.reserve.Value < CustomNightPanel.StartingReserveEnergy && GameManager.Instance.currentGameTime.Value < CustomNightPanel.GracePeriod)
+        {
+            PowerGenerator.Instance.reserve.WritePerm = Unity.Netcode.NetworkVariableWritePermission.Server;
+            PowerGenerator.Instance.reserve.Value = CustomNightPanel.StartingReserveEnergy;
+        }
+        
 
 
         foreach (AnimatronicID id in Enum.GetValues(typeof(AnimatronicID)))
@@ -135,7 +149,7 @@ public static class AIUtil
 
             var anim = anims[(int)id];
             if (anim.timeLeftToMove.Value > anim.currentMovementWaitTime.Value * 3 && GameManager.Instance.currentGameTime.Value > CustomNightPanel.GracePeriod) anim.timeLeftToMove.Value = anim.currentMovementWaitTime.Value * 3;
-
+            
         }
 
         if (CustomNightPanel.InfiniteEnergy == 1 && PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value != 800)

@@ -12,6 +12,8 @@ public static class CustomNightPanel
     public static float MaxPower = 100;
     public static float GracePeriod = 7;
 
+    public static float StartingReserveEnergy = 0f;
+
     private static float PressStartTime;
     private static bool IsMouseDown;
     private static float LastDuration;
@@ -155,6 +157,7 @@ public static class CustomNightPanel
             y += rowHeight * 2;
             Field("Starting power", ref StartingPower, 1, 100, x, ref y, rowHeight, 1, false, ref e);
             Field("Max power", ref MaxPower, 1, 100, x, ref y, rowHeight, 1, false, ref e);
+            Field("Starting reserve", ref StartingReserveEnergy, -1000, 1000, x, ref y, rowHeight, 5, false, ref e);
         }
 
 
