@@ -33,6 +33,11 @@ public class CustomNightBehaviour : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.F4) && GameManager.Instance && GameManager.Instance.IsHost)
+        {
+            GameManager.Instance.BackToLobby();
+        }
+
         AIUtil.OnUpdateFixes();
     }
 
