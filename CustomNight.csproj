@@ -132,13 +132,7 @@
     <AssemblyName>CustomNight_BEPINEX</AssemblyName>
   </PropertyGroup>
 
-  <Target Name="CopyToModsMELON" AfterTargets="Build" Condition="'$(Configuration)'=='MELON' Or '$(Configuration)'=='Debug'">
-    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="/home/void/Games/fnaf-online/Mods/" />
-  </Target>
 
-  <Target Name="CopyToModsBEPIN" AfterTargets="Build" Condition="'$(Configuration)'=='BEPIN' Or '$(Configuration)'=='Release'">
-    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(BEPINEX)/plugins/" />
-  </Target>
 
   <ItemGroup>
     <EmbeddedResource Include="assets\blip.wav" />
