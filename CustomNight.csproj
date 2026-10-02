@@ -9,6 +9,12 @@
 
     <BEPINEX>$(MSBuildProjectDirectory)/lib/BepInEx</BEPINEX>
     <MELONLOADER>$(MSBuildProjectDirectory)/lib/MelonLoader</MELONLOADER>
+
+    <AssemblySearchPaths>
+    {HintPathFromItem};
+    {RawFileName}
+    </AssemblySearchPaths>
+    
   </PropertyGroup>
 
 
