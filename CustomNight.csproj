@@ -1,115 +1,118 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-  <TargetFramework>netstandard2.0</TargetFramework>
-  <LangVersion>latest</LangVersion>
-  <Nullable>disable</Nullable>
-  <Configurations>Debug;Release;MELON;BEPIN</Configurations>
-  <Platforms>AnyCPU</Platforms>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <Configurations>Debug;Release;MELON;BEPIN</Configurations>
+    <Platforms>AnyCPU</Platforms>
+
+    <BEPINEX>$(MSBuildProjectDirectory)/lib/BepInEx</BEPINEX>
+    <MELONLOADER>$(MSBuildProjectDirectory)/lib/MelonLoader</MELONLOADER>
   </PropertyGroup>
 
 
   <ItemGroup Condition="'$(Configuration)'=='MELON' Or '$(Configuration)'=='Debug'">
     <Reference Include="MelonLoader">
-      <HintPath>/home/void/Games/fnaf-online/MelonLoader/net6/MelonLoader.dll</HintPath>
+      <HintPath>$(MELONLOADER)/net6/MelonLoader.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="0Harmony">
-      <HintPath>/home/void/Games/fnaf-online/MelonLoader/net6/0Harmony.dll</HintPath>
+      <HintPath>$(MELONLOADER)/net6/0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Il2CppInterop.Runtime">
-      <HintPath>/home/void/Games/fnaf-online/MelonLoader/net6/Il2CppInterop.Runtime.dll</HintPath>
+      <HintPath>$(MELONLOADER)/net6/Il2CppInterop.Runtime.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Il2Cppmscorlib">
-      <HintPath>/home/void/Games/fnaf-online/MelonLoader/Il2CppAssemblies/Il2Cppmscorlib.dll</HintPath>
+      <HintPath>$(MELONLOADER)/Il2CppAssemblies/Il2Cppmscorlib.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>/home/void/Games/fnaf-online/MelonLoader/Il2CppAssemblies/Assembly-CSharp.dll</HintPath>
+      <HintPath>$(MELONLOADER)/Il2CppAssemblies/Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>/home/void/Games/fnaf-online/MelonLoader/Il2CppAssemblies/UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(MELONLOADER)/Il2CppAssemblies/UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Unity.Netcode.Runtime">
-      <HintPath>/home/void/Games/fnaf-online/MelonLoader/Il2CppAssemblies/Unity.Netcode.Runtime.dll</HintPath>
+      <HintPath>$(MELONLOADER)/Il2CppAssemblies/Unity.Netcode.Runtime.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>/home/void/Games/fnaf-online/MelonLoader/Il2CppAssemblies/UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>$(MELONLOADER)/Il2CppAssemblies/UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>/home/void/Games/fnaf-online/MelonLoader/Il2CppAssemblies/UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>$(MELONLOADER)/Il2CppAssemblies/UnityEngine.IMGUIModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>/home/void/Games/fnaf-online/MelonLoader/Il2CppAssemblies/UnityEngine.UI.dll</HintPath>
+      <HintPath>$(MELONLOADER)/Il2CppAssemblies/UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
-      <HintPath>/home/void/Games/fnaf-online/MelonLoader/Il2CppAssemblies/UnityEngine.AudioModule.dll</HintPath>
+      <HintPath>$(MELONLOADER)/Il2CppAssemblies/UnityEngine.AudioModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 
 
   <ItemGroup Condition="'$(Configuration)'=='BEPIN' Or '$(Configuration)'=='Release'">
     <Reference Include="BepInEx.Core">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/core/BepInEx.Core.dll</HintPath>
+      <HintPath>$(BEPINEX)/core/BepInEx.Core.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx.Unity.IL2CPP">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/core/BepInEx.Unity.IL2CPP.dll</HintPath>
+      <HintPath>$(BEPINEX)/core/BepInEx.Unity.IL2CPP.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Il2CppInterop.Runtime">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/core/Il2CppInterop.Runtime.dll</HintPath>
+      <HintPath>$(BEPINEX)/core/Il2CppInterop.Runtime.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="0Harmony">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/core/0Harmony.dll</HintPath>
+      <HintPath>$(BEPINEX)/core/0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
 
-    <Reference Include="Il2CppSystem" Condition="Exists('/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/Il2CppSystem.dll')">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/Il2CppSystem.dll</HintPath>
+    <Reference Include="Il2CppSystem" Condition="Exists('$(BEPINEX)/interop/Il2CppSystem.dll')">
+      <HintPath>$(BEPINEX)/interop/Il2CppSystem.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Il2Cppmscorlib" Condition="Exists('/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/Il2Cppmscorlib.dll')">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/Il2Cppmscorlib.dll</HintPath>
+    <Reference Include="Il2Cppmscorlib" Condition="Exists('$(BEPINEX)/interop/Il2Cppmscorlib.dll')">
+      <HintPath>$(BEPINEX)/interop/Il2Cppmscorlib.dll</HintPath>
       <Private>false</Private>
     </Reference>
 
     <Reference Include="Unity.Netcode.Runtime">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/Unity.Netcode.Runtime.dll</HintPath>
+      <HintPath>$(BEPINEX)/interop/Unity.Netcode.Runtime.dll</HintPath>
       <Private>false</Private>
     </Reference>
 
     <Reference Include="Assembly-CSharp">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/Assembly-CSharp.dll</HintPath>
+      <HintPath>$(BEPINEX)/interop/Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(BEPINEX)/interop/UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>$(BEPINEX)/interop/UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>$(BEPINEX)/interop/UnityEngine.IMGUIModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/UnityEngine.UI.dll</HintPath>
+      <HintPath>$(BEPINEX)/interop/UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
-      <HintPath>/home/void/Games/fnaf-online-BEPINEX/BepInEx/interop/UnityEngine.AudioModule.dll</HintPath>
+      <HintPath>$(BEPINEX)/interop/UnityEngine.AudioModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -128,7 +131,7 @@
   </Target>
 
   <Target Name="CopyToModsBEPIN" AfterTargets="Build" Condition="'$(Configuration)'=='BEPIN' Or '$(Configuration)'=='Release'">
-    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="/home/void/Games/fnaf-online-BEPINEX/BepInEx/plugins/" />
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(BEPINEX)/plugins/" />
   </Target>
 
   <ItemGroup>

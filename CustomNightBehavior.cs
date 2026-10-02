@@ -1,14 +1,9 @@
-using System;
-using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
 
-#if MELON
-using Il2Cpp;
-using MelonLoader;
-#elif BEPIN
+#if BEPIN
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 #endif
 

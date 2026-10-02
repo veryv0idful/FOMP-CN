@@ -1,15 +1,4 @@
 using System.Collections;
-using System;
-using UnityEngine;
-
-#if MELON
-using Il2Cpp;
-using MelonLoader;
-#elif BEPIN
-
-#endif
-
-
 namespace CustomNight;
 
 public static class AIUtil

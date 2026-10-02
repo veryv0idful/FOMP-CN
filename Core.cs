@@ -1,16 +1,8 @@
 ﻿
-
-
-
 #if MELON
-using UnityEngine;
-using MelonLoader;
-
 [assembly: MelonInfo(typeof(CustomNight.CustomNightCore), CustomNight.BuildInfo.Name, CustomNight.BuildInfo.Version, CustomNight.BuildInfo.Author)]
 #elif BEPIN
 
-using BepInEx;
-using BepInEx.Unity.IL2CPP;
 #endif
 
 namespace CustomNight;
@@ -32,7 +24,7 @@ public class CustomNightCore : MelonMod
         Il2CppInterop.Runtime.Injection.ClassInjector.RegisterTypeInIl2Cpp<CustomNightBehaviour>();
 
         var go = new GameObject("[CustomNight_Runner]");
-        Object.DontDestroyOnLoad(go);
+        UnityEngine.Object.DontDestroyOnLoad(go);
         go.AddComponent<CustomNightBehaviour>();
     }
 }
