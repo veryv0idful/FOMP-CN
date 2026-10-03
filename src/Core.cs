@@ -12,7 +12,7 @@ public static class BuildInfo
     public const string Name = "CustomNight"; // Name of the Mod.
     public const string Description = "Adds custom night."; // Description for the Mod. 
     public const string Author = "BrightVoid"; // Author of the Mod.
-    public const string Version = "1.8.0"; // Version of the Mod.
+    public const string Version = "1.9.0"; // Version of the Mod.
 }
 
 
