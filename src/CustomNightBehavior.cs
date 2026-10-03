@@ -33,7 +33,7 @@ public class CustomNightBehaviour : MonoBehaviour
             GameManager.Instance.BackToLobby();
         }
 
-        AIUtil.OnUpdateFixes();
+        CustomNightManager.OnUpdateFixes();
     }
 
     private void OnGUI()
@@ -48,7 +48,7 @@ public class CustomNightBehaviour : MonoBehaviour
     {
         if (scene.name == "Game")
         {
-            StartCoroutine(AIUtil.SetUpCustomNight());
+            StartCoroutine(CustomNightManager.SetUpCustomNight());
         }
 
         if (scene.name != "Lobby" || !MultiplayerManager.Instance || !MultiplayerManager.Instance.IsHost)

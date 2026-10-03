@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <MelonModsDir>/home/void/Games/fnaf-online/Mods/</MelonModsDir>
+    <BepInExPluginsDir>/home/void/Games/fnaf-online-BEPINEX/BepInEx/plugins/</BepInExPluginsDir>
+  </PropertyGroup>
+
+  <Target Name="DeployToGame" AfterTargets="Build">
+    <Copy Condition="'$(Configuration)' == 'MELON' And Exists('$(MelonModsDir)')"
+          SourceFiles="$(TargetPath)"
+          DestinationFolder="$(MelonModsDir)" />
+
+    <Copy Condition="'$(Configuration)' == 'BEPIN' And Exists('$(BepInExPluginsDir)')"
+          SourceFiles="$(TargetPath)"
+          DestinationFolder="$(BepInExPluginsDir)" />
+  </Target>
+</Project>
