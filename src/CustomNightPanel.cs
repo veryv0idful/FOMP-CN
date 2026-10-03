@@ -156,9 +156,9 @@ public static class CustomNightPanel
         {
             GUI.Box(new Rect(x, y, width, rowHeight * (Ids.Length + 2)), "Custom Night - POWER");
             y += rowHeight * 2;
-            Field("Starting power", ref StartingPower, 1, 100, x, ref y, rowHeight, 1, false, ref e);
+            Field("Starting power", ref StartingPower, 1, 1000, x, ref y, rowHeight, 1, false, ref e);
             Field("Max power", ref MaxPower, 1, 100, x, ref y, rowHeight, 1, false, ref e);
-            Field("Starting reserve", ref StartingReserveEnergy, -1000, 1000, x, ref y, rowHeight, 5, false, ref e);
+            Field("Starting reserve", ref StartingReserveEnergy, 0, 9999, x, ref y, rowHeight, 5, false, ref e);
         }
 
 

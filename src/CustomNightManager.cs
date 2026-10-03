@@ -52,6 +52,23 @@ public static class CustomNightManager
   public static void SetPower(PlayerBehaviour Player, float Power)
   {
     Player.currentPower.Value = Power;
+    if (Power > CustomNightPanel.MaxPower)
+    {
+      SetExtraPower(Player, Power - CustomNightPanel.MaxPower);
+    }
+  }
+
+  public static void SetExtraPower(PlayerBehaviour Player, float ExtraPower)
+  {
+    if (Player.gameObject.TryGetComponent(out ExtraPower extraPower))
+    {
+      extraPower.CurrentExtraPower = ExtraPower;
+    }
+    else
+    {
+      extraPower = Player.gameObject.AddComponent<ExtraPower>();
+      extraPower.CurrentExtraPower = ExtraPower;
+    }
   }
 
   public static void SetGameEndTime(float EndTime)
