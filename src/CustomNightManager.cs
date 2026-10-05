@@ -136,6 +136,11 @@ public static class CustomNightManager
       SetReservePower(CustomNightPanel.StartingReserveEnergy);
     }
 
+    if (CustomNightPanel.ForceJanitorLMS == 1 && PlayerRoleManager.Instance.CountPlayersAlive() > 1)
+    {
+      PlayerRoleManager.Instance.janitorBehaviour.oxygenLevels.Value = 300;
+    }
+
 
 
     foreach (AnimatronicID id in Enum.GetValues(typeof(AnimatronicID)))
