@@ -20,7 +20,7 @@ public static class CustomNightManager
 
     foreach (Animatronic anim in AnimatronicManager.Instance.Animatronics)
     {
-      if (anim.enabled == true) anim.gameplayLoop ??= anim.StartCoroutine(anim.GameplayLoop());
+      if (anim.enabled == true && anim.gameplayLoop == null) anim.Initialise();
     }
     
   }
