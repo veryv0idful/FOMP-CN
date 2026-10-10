@@ -5,7 +5,7 @@ public static class AiUtil
 {
     public static float GetMovementCoolDownFromAI(AnimatronicID animid, float AI)
     {
-        if (AI == 0) return 999;
+        if (AI == 0) return float.PositiveInfinity;
         if (AI == 100) return 0.001f;
         switch (animid)
         {

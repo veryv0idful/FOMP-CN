@@ -15,6 +15,14 @@ public static class CustomNightManager
       SetCustomAiLevel(id, (int)CustomNightPanel.SelectedAiLevels[(int)id]);
     }
     SetNightProperties();
+
+    yield return new WaitForSeconds(CustomNightPanel.GracePeriod);
+
+    foreach (Animatronic anim in AnimatronicManager.Instance.Animatronics)
+    {
+      if (anim.enabled == true) anim.gameplayLoop ??= anim.StartCoroutine(anim.GameplayLoop());
+    }
+    
   }
 
   public static void SetNightProperties()
@@ -114,6 +122,8 @@ public static class CustomNightManager
     if (AI == 0)
     {
       Anims[(int)animid].enabled = false;
+      Anims[(int)animid].Disable();
+      return;
     }
 
     if (animid == AnimatronicID.Foxy)
