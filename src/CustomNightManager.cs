@@ -21,12 +21,11 @@ public static class CustomNightManager
     foreach (Animatronic anim in AnimatronicManager.Instance.Animatronics)
     {
 
-      if (anim.enabled == true && anim.gameplayLoop == null && anim.IsZap != true && anim.IsFoxy != true) anim.Initialise();
+      if (anim.enabled == true && anim.gameplayLoop == null && anim.IsFoxy != true) anim.Initialise();
 
       if (anim.IsZap && anim.enabled == true && CustomNightPanel.EarlyFreeEndo == 1)
       {
         anim.gameplayLoop = anim.StartCoroutine(anim.GameplayLoop());
-        anim.TryCast<Zap>().isApproachingPlayer.Value = false;
       }
     }
   }
@@ -190,6 +189,14 @@ public static class CustomNightManager
       var PlayerBehave = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
       PlayerBehave.currentPower.Value = Mathf.Min(PlayerBehave.currentPower.Value, CustomNightPanel.MaxPower);
     }
+
+    if (anims[(int)AnimatronicID.Endo].enabled == true && CustomNightPanel.EarlyFreeEndo == 1)
+    {
+      anims[(int)AnimatronicID.Endo].TryCast<Zap>().isApproachingPlayer.Value = false;
+    }
+
+
+
   }
 }
 
