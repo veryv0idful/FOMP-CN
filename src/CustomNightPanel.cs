@@ -15,6 +15,8 @@ public static class CustomNightPanel
     public static float DisableWordle = 0f;
     public static float ForceJanitorLMS = 0f;
 
+    public static float EarlyFreeEndo = 0f;
+
     private static float PressStartTime;
     private static bool IsMouseDown;
     private static float LastDuration;
@@ -152,6 +154,7 @@ public static class CustomNightPanel
             Field("Grace period", ref GracePeriod, 1, 30, x, ref y, rowHeight, 1, false, ref e);
             Field("Disable wordle", ref DisableWordle, 0, 1, x, ref y, rowHeight, 1, true, ref e);
             Field("Force janitor lms", ref ForceJanitorLMS, 0, 1, x, ref y, rowHeight, 1, true, ref e);
+            Field("Endo roam early", ref EarlyFreeEndo, 0, 1, x, ref y, rowHeight, 1, true, ref e);
         }
 
         if (CurrentPanel == CPanelTab.Power)

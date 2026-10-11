@@ -20,9 +20,15 @@ public static class CustomNightManager
 
     foreach (Animatronic anim in AnimatronicManager.Instance.Animatronics)
     {
-      if (anim.enabled == true && anim.gameplayLoop == null) anim.Initialise();
+
+      if (anim.enabled == true && anim.gameplayLoop == null && anim.IsZap != true && anim.IsFoxy != true) anim.Initialise();
+
+      if (anim.IsZap && anim.enabled == true && CustomNightPanel.EarlyFreeEndo == 1)
+      {
+        anim.gameplayLoop = anim.StartCoroutine(anim.GameplayLoop());
+        anim.TryCast<Zap>().isApproachingPlayer.Value = false;
+      }
     }
-    
   }
 
   public static void SetNightProperties()
