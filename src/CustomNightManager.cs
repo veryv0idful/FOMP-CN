@@ -12,7 +12,7 @@ public static class CustomNightManager
     foreach (AnimatronicID id in Enum.GetValues(typeof(AnimatronicID)))
     {
       if (CustomNightPanel.SelectedAiLevels[(int)id] == -1) continue;
-      SetCustomAiLevel(id, (int)CustomNightPanel.SelectedAiLevels[(int)id]);
+      id.SetCustomAiLevel((int)CustomNightPanel.SelectedAiLevels[(int)id]);
     }
     SetNightProperties();
 
@@ -42,7 +42,7 @@ public static class CustomNightManager
 
       var Player = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
 
-      SetPower(Player, CustomNightPanel.StartingPower);
+      Player.SetPower(CustomNightPanel.StartingPower);
     }
 
     if (CustomNightPanel.DisableWordle == 1) WordleSystem.Instance.gameState.Value = WordleSystem.WordleGameState.Loss;
@@ -62,16 +62,16 @@ public static class CustomNightManager
 
   }
 
-  public static void SetPower(PlayerBehaviour Player, float Power)
+  public static void SetPower(this PlayerBehaviour Player, float Power)
   {
     Player.currentPower.Value = Power;
     if (Power > CustomNightPanel.MaxPower)
     {
-      SetExtraPower(Player, Power - CustomNightPanel.MaxPower);
+      Player.SetExtraPower(Power - CustomNightPanel.MaxPower);
     }
   }
 
-  public static void SetExtraPower(PlayerBehaviour Player, float ExtraPower)
+  public static void SetExtraPower(this PlayerBehaviour Player, float ExtraPower)
   {
     if (Player.gameObject.TryGetComponent(out ExtraPower extraPower))
     {
@@ -114,7 +114,7 @@ public static class CustomNightManager
 
 
 
-  public static void SetCustomAiLevel(AnimatronicID animid, float AI)
+  public static void SetCustomAiLevel(this AnimatronicID animid, float AI)
   {
     AnimatronicManager animManager = AnimatronicManager.Instance;
     var Anims = animManager.Animatronics;

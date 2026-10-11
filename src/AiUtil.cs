@@ -3,27 +3,20 @@ namespace CustomNight;
 
 public static class AiUtil
 {
-    public static float GetMovementCoolDownFromAI(AnimatronicID animid, float AI)
+    public static float GetMovementCoolDownFromAI(this AnimatronicID animid, float AI)
     {
         if (AI == 0) return float.PositiveInfinity;
         if (AI == 100) return 0.001f;
-        switch (animid)
+        return animid switch
         {
-            case AnimatronicID.Freddy:
-                return 20f * Mathf.Exp(-0.0756f * AI);
-            case AnimatronicID.Bonnie:
-                return 6f * Mathf.Exp(-0.0203f * AI);
-            case AnimatronicID.Chica:
-                return 7f * Mathf.Exp(-0.0254f * AI);
-            case AnimatronicID.Foxy:
-                return 10f * Mathf.Exp(-0.0445f * AI);
-            case AnimatronicID.Endo:
-                return 15f * Mathf.Exp(-0.0602f * AI);
-            case AnimatronicID.Golden:
-                return 20f * Mathf.Exp(-0.0756f * AI);
-            default:
-                return 10f;
-        }
+            AnimatronicID.Freddy => 20f * Mathf.Exp(-0.0756f * AI),
+            AnimatronicID.Bonnie => 6f * Mathf.Exp(-0.0203f * AI),
+            AnimatronicID.Chica => 7f * Mathf.Exp(-0.0254f * AI),
+            AnimatronicID.Foxy => 10f * Mathf.Exp(-0.0445f * AI),
+            AnimatronicID.Endo => 15f * Mathf.Exp(-0.0602f * AI),
+            AnimatronicID.Golden => 20f * Mathf.Exp(-0.0756f * AI),
+            _ => 10f,
+        };
     }
 
     public static float GetMaxFreddyWind(float FreddyAI)
