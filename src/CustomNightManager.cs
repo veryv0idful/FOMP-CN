@@ -115,13 +115,13 @@ public static class CustomNightManager
 
 
 
-  public static void SetCustomAiLevel(this AnimatronicID animid, float AI)
+  public static void SetCustomAiLevel(this AnimatronicID AnimID, float AI)
   {
     AnimatronicManager animManager = AnimatronicManager.Instance;
-    var Animatronic = animManager.Animatronics[(int)animid];
+    var Animatronic = animManager.Animatronics[(int)AnimID];
 
 #if MELON
-    Melon<CustomNightCore>.Logger.Msg($"SET {animid.ToString()} AI {AI} || MOVEMENT {AiUtil.GetMovementCoolDownFromAI(animid, AI)}s");
+    Melon<CustomNightCore>.Logger.Msg($"SET {AnimID.ToString()} AI {AI} || MOVEMENT {AiUtil.GetMovementCoolDownFromAI(AnimID, AI)}s");
 #endif
 
 
@@ -132,14 +132,14 @@ public static class CustomNightManager
       return;
     }
 
-    if (animid == AnimatronicID.Foxy)
+    if (AnimID == AnimatronicID.Foxy)
     {
       Animatronic.TryCast<Foxy>().currentAttackAttempt.Value = AiUtil.GetFoxyPreAttacks(AI);
     }
 
     Animatronic.currentDifficulty.Value = AI;
-    Animatronic.currentMovementWaitTime.Value = AiUtil.GetMovementCoolDownFromAI(animid, AI);
-    Animatronic.timeLeftToMove.Value = Mathf.Max(AiUtil.GetMovementCoolDownFromAI(animid, AI) * 3, CustomNightPanel.GracePeriod);
+    Animatronic.currentMovementWaitTime.Value = AnimID.GetMovementCoolDownFromAI(AI);
+    Animatronic.timeLeftToMove.Value = Mathf.Max(AnimID.GetMaxMovementCoolDownFromAI(AI), CustomNightPanel.GracePeriod);
   }
 
   public static void OnUpdateFixes()
