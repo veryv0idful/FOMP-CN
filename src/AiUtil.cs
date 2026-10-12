@@ -19,16 +19,10 @@ public static class AiUtil
         };
     }
 
-    public static float GetMaxFreddyWind(float FreddyAI)
-    {
-        if (FreddyAI <= 20) return 1;
-        return Mathf.Max(1f - Mathf.Floor(FreddyAI / 20f) / 5f, 0.2f);
-    }
-
-    public static int GetFoxyPreAttacks(float AI)
-    {
-        return Mathf.Max((int)Mathf.Floor(AI / 100 * 8) - 1, 0);
-    }
+    public static float GetMaxMovementCoolDownFromAI(this AnimatronicID animid,float AI) => animid.GetMovementCoolDownFromAI(AI) * 3;
+    public static float GetMaxFreddyWind(float FreddyAI) => FreddyAI <= 20 ? 1 : Mathf.Max(1f - Mathf.Floor(FreddyAI / 20f) / 5f, 0.2f);
+    public static int GetFoxyPreAttacks(float AI) => Mathf.Max(Mathf.FloorToInt(AI / 100 * 8) - 1, 0);
+    public static Animatronic GetAnimatronicFromID(this AnimatronicID animid) => AnimatronicManager.Instance?.Animatronics[(int)animid];
 }
 
 public enum AnimatronicID
