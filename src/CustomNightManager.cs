@@ -20,12 +20,20 @@ public static class CustomNightManager
 
     foreach (Animatronic anim in AnimatronicManager.Instance.Animatronics)
     {
+      if (!anim.enabled) continue;
 
-      if (anim.enabled == true && anim.gameplayLoop == null && anim.IsFoxy != true) anim.Initialise();
-
-      if (anim.IsZap && anim.enabled == true && CustomNightPanel.EarlyFreeEndo == 1)
+      if (anim.gameplayLoop == null && !anim.IsFoxy)
       {
-        anim.gameplayLoop = anim.StartCoroutine(anim.GameplayLoop());
+        if (anim.IsZap)
+        {
+          anim.Initialise();
+          if (CustomNightPanel.EarlyFreeEndo == 1)
+            anim.gameplayLoop ??= anim.StartCoroutine(anim.GameplayLoop());
+        }
+        else
+        {
+          anim.gameplayLoop = anim.StartCoroutine(anim.GameplayLoop());
+        }
       }
     }
   }
