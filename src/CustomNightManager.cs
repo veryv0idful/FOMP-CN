@@ -18,24 +18,32 @@ public static class CustomNightManager
 
     yield return new WaitForSeconds(CustomNightPanel.GracePeriod);
 
+
+    if (AnimatronicManager.Instance.CanFindNightData(GameManager.Instance.gameNight, "Freddy", out var data))
+    yield break;
+
     foreach (Animatronic anim in AnimatronicManager.Instance.Animatronics)
     {
-      if (!anim.enabled) continue;
+      if (anim.gameplayLoop != null || anim.IsFoxy)
+        continue;
 
-      if (anim.gameplayLoop == null && !anim.IsFoxy)
+      if (anim.IsZap || anim.IsGoldenFreddy)
+        InitialiseSpecial(anim);
+      else
+        anim.gameplayLoop = anim.StartCoroutine(anim.GameplayLoop());
+    }
+
+    void InitialiseSpecial(Animatronic anim)
+    {
+      anim.Initialise();
+
+      if (anim.enabled && anim.IsZap)
       {
-        if (anim.IsZap)
-        {
-          anim.Initialise();
-          if (CustomNightPanel.EarlyFreeEndo == 1)
-            anim.gameplayLoop ??= anim.StartCoroutine(anim.GameplayLoop());
-        }
-        else
-        {
-          anim.gameplayLoop = anim.StartCoroutine(anim.GameplayLoop());
-        }
+        if (CustomNightPanel.EarlyFreeEndo == 1)
+          anim.gameplayLoop ??= anim.StartCoroutine(anim.GameplayLoop());
       }
     }
+
   }
 
   public static void SetNightProperties()
@@ -136,8 +144,8 @@ public static class CustomNightManager
     if (AI == 0)
     {
       Animatronic.enabled = false;
-      Animatronic.Disable();
-      return;
+
+      if(!Animatronic.IsZap)Animatronic.Disable();
     }
 
     if (AnimID == AnimatronicID.Foxy)
@@ -195,6 +203,12 @@ public static class CustomNightManager
     if (AnimatronicID.Endo.GetAnimatronicFromID().enabled == true && CustomNightPanel.EarlyFreeEndo == 1)
     {
       AnimatronicID.Endo.GetAnimatronicFromID().TryCast<Zap>().isApproachingPlayer.Value = false;
+
+    }
+
+    if (AnimatronicID.Endo.GetAnimatronicFromID().enabled == false)
+    {
+      AnimatronicID.Endo.GetAnimatronicFromID().TryCast<Zap>().moveSpeed = 0;
     }
 
 
