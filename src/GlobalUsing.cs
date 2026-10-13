@@ -1,5 +1,6 @@
 global using System;
 global using UnityEngine;
+global using Unity.Netcode;
 
 #if MELON
 global using MelonLoader;

@@ -33,7 +33,7 @@ public static class CustomNightPanel
 
     public static float GetSelectedAiLevel(this AnimatronicID animid) => SelectedAiLevels[(int)animid];
 
-    public static bool GracePeriodPassed() => GameManager.Instance?.currentGameTime.Value >= GracePeriod;
+    public static bool GracePeriodPassed => GameManager.Instance?.currentGameTime.Value >= GracePeriod;
 
 
     static bool Button(string Content, Rect rect, Event e)

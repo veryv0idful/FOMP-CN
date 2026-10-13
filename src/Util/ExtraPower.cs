@@ -1,5 +1,3 @@
-using Unity.Netcode;
-
 namespace CustomNight;
 
 #if MELON
@@ -24,6 +22,19 @@ public class ExtraPower : MonoBehaviour
             float CurrentPowerIncrease = Mathf.Min(CustomNightPanel.MaxPower - CurrentPower.Value, CurrentExtraPower);
             CurrentPower.Value += CurrentPowerIncrease;
             CurrentExtraPower -= CurrentPowerIncrease;
+        }
+    }
+
+    public static void SetExtraPower(PlayerBehaviour Player, float ExtraPower)
+    {
+        if (Player.gameObject.TryGetComponent(out ExtraPower extraPower))
+        {
+            extraPower.CurrentExtraPower = ExtraPower;
+        }
+        else
+        {
+            extraPower = Player.gameObject.AddComponent<ExtraPower>();
+            extraPower.CurrentExtraPower = ExtraPower;
         }
     }
 }

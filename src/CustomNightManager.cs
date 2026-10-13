@@ -1,151 +1,100 @@
 using System.Collections;
+using Unity.Netcode;
 namespace CustomNight;
 
 public static class CustomNightManager
 {
 
-  public static IEnumerator SetUpCustomNight()
-  {
-    if (!IsLocalPlayerHost()) yield break;
-    while (!GameManager.Instance.isPlaying) yield return null;
+  public static bool IsHost => MultiplayerManager.Instance && MultiplayerManager.Instance.IsHost;
+  public static bool IsPlaying => GameManager.Instance && GameManager.Instance.isPlaying;
+  public static bool IsPlayingAsHost => IsHost && IsPlaying;
 
-    foreach (AnimatronicID AnimID in Enum.GetValues(typeof(AnimatronicID)))
-    {
-      if (AnimID.GetSelectedAiLevel() == -1) continue;
-      AnimID.SetCustomAiLevel((int)CustomNightPanel.SelectedAiLevels[(int)AnimID]);
-    }
+  internal static IEnumerator SetUpCustomNight()
+  {
+    if (!IsHost) yield break;
+    while (!IsPlaying) yield return null;
+
+    foreach (AnimatronicID AnimID in AiUtil.AnimatronicIDs) AnimID.SetCustomAiLevel(AnimID.GetSelectedAiLevel());
+
     SetNightProperties();
+    DebugLogs();
 
     yield return new WaitForSeconds(CustomNightPanel.GracePeriod);
 
-
-    if (AnimatronicManager.Instance.CanFindNightData(GameManager.Instance.gameNight, "Freddy", out var data))
-    yield break;
-
-    foreach (Animatronic anim in AnimatronicManager.Instance.Animatronics)
-    {
-      if (anim.gameplayLoop != null || anim.IsFoxy)
-        continue;
-
-      if (anim.IsZap || anim.IsGoldenFreddy)
-        InitialiseSpecial(anim);
-      else
-        anim.gameplayLoop = anim.StartCoroutine(anim.GameplayLoop());
-    }
-
-    void InitialiseSpecial(Animatronic anim)
-    {
-      anim.Initialise();
-
-      if (anim.enabled && anim.IsZap)
-      {
-        if (CustomNightPanel.EarlyFreeEndo == 1)
-          anim.gameplayLoop ??= anim.StartCoroutine(anim.GameplayLoop());
-      }
-    }
-
+    if (!AnimatronicManager.Instance.CanFindNightData(GameManager.Instance.gameNight, "Freddy", out var _)) InitInvalidNight();
   }
 
-  public static void SetNightProperties()
+  private static void SetNightProperties()
   {
-    if (!IsPlaying() || !IsLocalPlayerHost()) return;
+    if (!IsPlayingAsHost) return;
 
-    SetGameEndTime(CustomNightPanel.NightTime * 60);
+    GameManager.Instance.gameEndTime.Value = CustomNightPanel.NightTime * 60;
 
-    foreach (var Role in PlayerRoleManager.Instance.participatingPlayers)
+    foreach (PlayerRoles Role in PlayerRoleManager.Instance.participatingPlayers)
     {
       if (Role == PlayerRoles.PurpleGuy || Role == PlayerRoles.None) continue;
 
-      var Player = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
-
+      PlayerBehaviour Player = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
       Player.SetPower(CustomNightPanel.StartingPower);
     }
 
     if (CustomNightPanel.DisableWordle == 1) WordleSystem.Instance.gameState.Value = WordleSystem.WordleGameState.Loss;
-
-#if MELON
-    Melon<CustomNightCore>.Logger.Msg($"SET NIGHT TIME TO {CustomNightPanel.NightTime * 60}s");
-    Melon<CustomNightCore>.Logger.Msg($"SET GRACE PERIOD TO {CustomNightPanel.GracePeriod}s");
-    Melon<CustomNightCore>.Logger.Msg($"SET MAX FREDDY WIND TO {AiUtil.GetMaxFreddyWind(CustomNightPanel.SelectedAiLevels[0]) * 100}%");
-    Melon<CustomNightCore>.Logger.Msg($"SET FOXY PREATTACKS TO {AiUtil.GetFoxyPreAttacks(CustomNightPanel.SelectedAiLevels[(int)AnimatronicID.Foxy])} ATTACKS");
-    Melon<CustomNightCore>.Logger.Msg($"SET MAX POWER TO {CustomNightPanel.MaxPower}%");
-    Melon<CustomNightCore>.Logger.Msg($"SET STARTING POWER TO {CustomNightPanel.StartingPower}%");
-    Melon<CustomNightCore>.Logger.Msg($"SET STARTING RESERVE POWER TO {CustomNightPanel.StartingReserveEnergy}%");
-    Melon<CustomNightCore>.Logger.Msg($"SET INFINITE PURPLE ENERGY TO {CustomNightPanel.InfiniteEnergy == 1}");
-    Melon<CustomNightCore>.Logger.Msg($"SET DISABLE WORDLE TO {CustomNightPanel.DisableWordle == 1}");
-    Melon<CustomNightCore>.Logger.Msg($"SET EARLY FREE ENDO TO {CustomNightPanel.EarlyFreeEndo == 1}");
-#endif
-
-
   }
-
-  public static void SetPower(this PlayerBehaviour Player, float Power)
+  internal static void OnUpdateFixes()
   {
-    Player.currentPower.Value = Power;
-    if (Power > CustomNightPanel.MaxPower)
+    if (!IsPlayingAsHost) return;
+
+    if (PowerGenerator.Instance.reserve.Value < CustomNightPanel.StartingReserveEnergy && GameManager.Instance.currentGameTime.Value < CustomNightPanel.GracePeriod && CustomNightPanel.StartingReserveEnergy != 0)
+      PowerUtil.SetReservePower(CustomNightPanel.StartingReserveEnergy);
+
+    if (CustomNightPanel.ForceJanitorLMS == 1 && PlayerRoleManager.Instance.CountPlayersAlive() > 1)
+      PlayerRoleManager.Instance.janitorBehaviour.oxygenLevels.Value = 300;
+
+
+    foreach (AnimatronicID AnimID in AiUtil.AnimatronicIDs)
     {
-      Player.SetExtraPower(Power - CustomNightPanel.MaxPower);
-    }
-  }
+      if (AnimID.GetSelectedAiLevel() == -1) continue;
+      Animatronic Animatronic = AnimID.GetAnimatronicFromID();
 
-  public static void SetExtraPower(this PlayerBehaviour Player, float ExtraPower)
-  {
-    if (Player.gameObject.TryGetComponent(out ExtraPower extraPower))
+      if (AnimID == AnimatronicID.Freddy)
+      {
+        NetworkVariable<float> Wind = GlobalCameraSystem.Instance.freddyMusicWind;
+        Wind.Value = Mathf.Min(AiUtil.GetMaxFreddyWind(AnimID.GetSelectedAiLevel()), Wind.Value);
+      }
+
+      if (Animatronic.timeLeftToMove.Value > AnimID.GetMaxMovementCoolDownFromAI(AnimID.GetSelectedAiLevel()) && CustomNightPanel.GracePeriodPassed) Animatronic.timeLeftToMove.Value = AnimID.GetMaxMovementCoolDownFromAI(AnimID.GetSelectedAiLevel());
+    }
+
+    if (CustomNightPanel.InfiniteEnergy == 1 && PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value != 800)
     {
-      extraPower.CurrentExtraPower = ExtraPower;
+      PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value = 800;
     }
-    else
+
+    foreach (PlayerRoles Role in PlayerRoleManager.Instance.participatingPlayers)
     {
-      extraPower = Player.gameObject.AddComponent<ExtraPower>();
-      extraPower.CurrentExtraPower = ExtraPower;
+      if (Role == PlayerRoles.PurpleGuy || Role == PlayerRoles.None) continue;
+      PlayerBehaviour PlayerBehaviour = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
+      PlayerBehaviour.currentPower.Value = Mathf.Min(PlayerBehaviour.currentPower.Value, CustomNightPanel.MaxPower);
     }
+
+    if (AnimatronicID.Endo.GetAnimatronicFromID().enabled == true && CustomNightPanel.EarlyFreeEndo == 1) AnimatronicID.Endo.GetAnimatronicFromID().TryCast<Zap>().isApproachingPlayer.Value = false;
+    if (AnimatronicID.Endo.GetAnimatronicFromID().enabled == false) AnimatronicID.Endo.GetAnimatronicFromID().TryCast<Zap>().moveSpeed = 0;
   }
-
-  public static void SetGameEndTime(float EndTime)
-  {
-    GameManager.Instance.gameEndTime.Value = EndTime;
-
-  }
-
-  public static bool IsLocalPlayerHost()
-  {
-    if (!MultiplayerManager.Instance || !MultiplayerManager.Instance.IsHost) return false;
-    return true;
-  }
-
-  public static bool IsPlaying()
-  {
-    return GameManager.Instance && GameManager.Instance.isPlaying;
-  }
-
-
-
-  public static void SetReservePower(float Reserve)
-  {
-    if (!IsPlaying() || !IsLocalPlayerHost()) return;
-
-    PowerGenerator.Instance.reserve.WritePerm = Unity.Netcode.NetworkVariableWritePermission.Server;
-    PowerGenerator.Instance.reserve.Value = Reserve;
-  }
-
-
-
-
+  
   public static void SetCustomAiLevel(this AnimatronicID AnimID, float AI)
   {
-    AnimatronicManager animManager = AnimatronicManager.Instance;
-    var Animatronic = animManager.Animatronics[(int)AnimID];
+    if (AI < 0) return;
+    Animatronic Animatronic = AnimID.GetAnimatronicFromID();
 
 #if MELON
     Melon<CustomNightCore>.Logger.Msg($"SET {AnimID.ToString()} AI {AI} || MOVEMENT {AiUtil.GetMovementCoolDownFromAI(AnimID, AI)}s");
 #endif
 
-
     if (AI == 0)
     {
       Animatronic.enabled = false;
 
-      if(!Animatronic.IsZap)Animatronic.Disable();
+      if (!Animatronic.IsZap) Animatronic.Disable();
     }
 
     if (AnimID == AnimatronicID.Foxy)
@@ -158,61 +107,45 @@ public static class CustomNightManager
     Animatronic.timeLeftToMove.Value = Mathf.Max(AnimID.GetMaxMovementCoolDownFromAI(AI), CustomNightPanel.GracePeriod);
   }
 
-  public static void OnUpdateFixes()
+  public static void InitInvalidNight()
   {
-    if (!IsPlaying() || !IsLocalPlayerHost()) return;
-
-    if (PowerGenerator.Instance.reserve.Value < CustomNightPanel.StartingReserveEnergy && GameManager.Instance.currentGameTime.Value < CustomNightPanel.GracePeriod && CustomNightPanel.StartingReserveEnergy != 0)
+    foreach (Animatronic anim in AnimatronicManager.Instance.Animatronics)
     {
-      SetReservePower(CustomNightPanel.StartingReserveEnergy);
+      if (anim.gameplayLoop != null || anim.IsFoxy)
+        continue;
+
+      if (anim.IsZap || anim.IsGoldenFreddy)
+        InitialiseSpecial(anim);
+      else
+        anim.gameplayLoop = anim.StartCoroutine(anim.GameplayLoop());
     }
 
-    if (CustomNightPanel.ForceJanitorLMS == 1 && PlayerRoleManager.Instance.CountPlayersAlive() > 1)
+    static void InitialiseSpecial(Animatronic anim)
     {
-      PlayerRoleManager.Instance.janitorBehaviour.oxygenLevels.Value = 300;
-    }
+      anim.Initialise();
 
-
-
-    foreach (AnimatronicID AnimID in Enum.GetValues(typeof(AnimatronicID)))
-    {
-      if (AnimID.GetSelectedAiLevel() == -1) continue;
-      var Animatronic = AnimID.GetAnimatronicFromID();
-
-      if (AnimID == AnimatronicID.Freddy)
+      if (anim.enabled && anim.IsZap)
       {
-        var Wind = GlobalCameraSystem.Instance.freddyMusicWind;
-        Wind.Value = Mathf.Min(AiUtil.GetMaxFreddyWind(AnimID.GetSelectedAiLevel()), Wind.Value);
+        if (CustomNightPanel.EarlyFreeEndo == 1)
+          anim.gameplayLoop ??= anim.StartCoroutine(anim.GameplayLoop());
       }
-
-      if (Animatronic.timeLeftToMove.Value > AnimID.GetMaxMovementCoolDownFromAI(AnimID.GetSelectedAiLevel()) && CustomNightPanel.GracePeriodPassed()) Animatronic.timeLeftToMove.Value = AnimID.GetMaxMovementCoolDownFromAI(AnimID.GetSelectedAiLevel());
     }
+  }
 
-    if (CustomNightPanel.InfiniteEnergy == 1 && PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value != 800)
-    {
-      PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value = 800;
-    }
-
-    foreach (var Role in PlayerRoleManager.Instance.participatingPlayers)
-    {
-      if (Role == PlayerRoles.PurpleGuy || Role == PlayerRoles.None) continue;
-      var PlayerBehave = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
-      PlayerBehave.currentPower.Value = Mathf.Min(PlayerBehave.currentPower.Value, CustomNightPanel.MaxPower);
-    }
-
-    if (AnimatronicID.Endo.GetAnimatronicFromID().enabled == true && CustomNightPanel.EarlyFreeEndo == 1)
-    {
-      AnimatronicID.Endo.GetAnimatronicFromID().TryCast<Zap>().isApproachingPlayer.Value = false;
-
-    }
-
-    if (AnimatronicID.Endo.GetAnimatronicFromID().enabled == false)
-    {
-      AnimatronicID.Endo.GetAnimatronicFromID().TryCast<Zap>().moveSpeed = 0;
-    }
-
-
-
+  private static void DebugLogs()
+  {
+#if MELON
+    Melon<CustomNightCore>.Logger.Msg($"SET NIGHT TIME TO {CustomNightPanel.NightTime * 60}s");
+    Melon<CustomNightCore>.Logger.Msg($"SET GRACE PERIOD TO {CustomNightPanel.GracePeriod}s");
+    Melon<CustomNightCore>.Logger.Msg($"SET MAX FREDDY WIND TO {AiUtil.GetMaxFreddyWind(AnimatronicID.Freddy.GetSelectedAiLevel()) * 100}%");
+    Melon<CustomNightCore>.Logger.Msg($"SET FOXY PREATTACKS TO {AiUtil.GetFoxyPreAttacks(AnimatronicID.Foxy.GetSelectedAiLevel())} ATTACKS");
+    Melon<CustomNightCore>.Logger.Msg($"SET MAX POWER TO {CustomNightPanel.MaxPower}%");
+    Melon<CustomNightCore>.Logger.Msg($"SET STARTING POWER TO {CustomNightPanel.StartingPower}%");
+    Melon<CustomNightCore>.Logger.Msg($"SET STARTING RESERVE POWER TO {CustomNightPanel.StartingReserveEnergy}%");
+    Melon<CustomNightCore>.Logger.Msg($"SET INFINITE PURPLE ENERGY TO {CustomNightPanel.InfiniteEnergy == 1}");
+    Melon<CustomNightCore>.Logger.Msg($"SET DISABLE WORDLE TO {CustomNightPanel.DisableWordle == 1}");
+    Melon<CustomNightCore>.Logger.Msg($"SET EARLY FREE ENDO TO {CustomNightPanel.EarlyFreeEndo == 1}");
+#endif
   }
 }
 
