@@ -1,6 +1,7 @@
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using Il2CppInterop.Runtime.Attributes;
 
 
 #if BEPIN
@@ -8,6 +9,10 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 #endif
 
 namespace CustomNight;
+
+#if MELON
+[RegisterTypeInIl2Cpp]
+#endif
 
 public class CustomNightBehaviour : MonoBehaviour
 {
@@ -57,6 +62,7 @@ public class CustomNightBehaviour : MonoBehaviour
         }
     }
 
+    [HideFromIl2Cpp]
     private void StartCoroutine(IEnumerator Coroutine)
     {
 #if BEPIN
