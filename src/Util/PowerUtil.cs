@@ -11,9 +11,5 @@ public static class PowerUtil
     public static void SetPower(this PlayerBehaviour Player, float Power)
     {
         Player.currentPower.Value = Power;
-        if (Power > CustomNightPanel.MaxPower)
-        {
-            ExtraPower.SetExtraPower(Player,Power - CustomNightPanel.MaxPower);
-        }
     }
 }

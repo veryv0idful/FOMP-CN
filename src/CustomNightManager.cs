@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.Netcode;
 namespace CustomNight;
 
 public static class CustomNightManager
@@ -80,7 +79,7 @@ public static class CustomNightManager
     if (AnimatronicID.Endo.GetAnimatronicFromID().enabled == true && CustomNightPanel.EarlyFreeEndo == 1) AnimatronicID.Endo.GetAnimatronicFromID().TryCast<Zap>().isApproachingPlayer.Value = false;
     if (AnimatronicID.Endo.GetAnimatronicFromID().enabled == false) AnimatronicID.Endo.GetAnimatronicFromID().TryCast<Zap>().moveSpeed = 0;
   }
-  
+
   public static void SetCustomAiLevel(this AnimatronicID AnimID, float AI)
   {
     if (AI < 0) return;
