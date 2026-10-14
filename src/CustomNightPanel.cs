@@ -128,12 +128,12 @@ public static class CustomNightPanel
         {
             GUI.Box(new Rect(x, y, width, rowHeight * (AiUtil.AnimatronicIDs.Length + 2)), "Custom Night - GENERAL");
             y += rowHeight * 2;
+            Field("Night minutes", ref NightSettings.NightTime, 1, 360, x, ref y, rowHeight, 1, false, ref e);
+            Field("Grace period", ref NightSettings.GracePeriod, 1, 30, x, ref y, rowHeight, 1, false, ref e);
             Field("Inf energy", ref NightSettings.InfiniteEnergy, 0, 1, x, ref y, rowHeight, 1, true, ref e);
             Field("Disable wordle", ref NightSettings.DisableWordle, 0, 1, x, ref y, rowHeight, 1, true, ref e);
             Field("Force janitor lms", ref NightSettings.ForceJanitorLMS, 0, 1, x, ref y, rowHeight, 1, true, ref e);
             Field("Endo roam early", ref NightSettings.EarlyFreeEndo, 0, 1, x, ref y, rowHeight, 1, true, ref e);
-            Field("Night minutes", ref NightSettings.NightTime, 1, 360, x, ref y, rowHeight, 1, false, ref e);
-            Field("Grace period", ref NightSettings.GracePeriod, 1, 30, x, ref y, rowHeight, 1, false, ref e);
         }
 
         if (CurrentPanel == CPanelTab.Power)
