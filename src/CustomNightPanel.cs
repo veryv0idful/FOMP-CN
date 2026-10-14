@@ -1,13 +1,14 @@
 namespace CustomNight;
+
 using static CustomNightManager;
 
 public static class CustomNightPanel
 {
     public static bool Shown = false;
-    private static float PressStartTime;
     private static bool IsMouseDown;
-    private static float LastDuration;
-    private static bool FirstHold;
+    static float PressStart;
+    static float NextRepeatTime;
+    public static float MouseCurrentHold => IsMouseDown ? Time.realtimeSinceStartup - PressStart : 0f;
     private static AudioClip Blip;
     public static CPanelTab CurrentPanel = CPanelTab.AI;
 
@@ -16,42 +17,31 @@ public static class CustomNightPanel
         Blip ??= ResourceUtil.GetEmbeddedAudioClip("CustomNight.assets.blip.wav");
 
         GUI.Box(rect, Content);
-        if (e.type == EventType.MouseDown && e.button == 0)
-        {
-            PressStartTime = Time.realtimeSinceStartup;
-            IsMouseDown = true;
-            FirstHold = true;
-        }
 
-        if (e.type == EventType.MouseUp && e.button == 0 && IsMouseDown)
+        float Now = Time.realtimeSinceStartup;
+        bool Fired = false;
+
+        if (e.rawType == EventType.MouseUp && e.button == 0)
         {
             IsMouseDown = false;
-            LastDuration = Time.realtimeSinceStartup - PressStartTime;
-            FirstHold = true;
         }
-
-        float currentHold = IsMouseDown ? (Time.realtimeSinceStartup - PressStartTime) : LastDuration;
-
-        if (currentHold > 0.09 && rect.Contains(e.mousePosition) && !FirstHold)
+        else if (e.type == EventType.MouseDown && e.button == 0 && rect.Contains(e.mousePosition))
         {
-            PressStartTime = Time.realtimeSinceStartup;
-            ResourceUtil.PlayAudioClip(Blip);
-            return true;
-        }
-
-        if (currentHold > 0.5 && IsMouseDown && FirstHold)
-        {
-            PressStartTime = Time.realtimeSinceStartup;
-            FirstHold = false;
-        }
-
-        if (e.type == EventType.MouseDown && rect.Contains(e.mousePosition))
-        {
+            IsMouseDown = true;
+            PressStart = Now;
+            NextRepeatTime = Now + 0.5f;
             e.Use();
-            ResourceUtil.PlayAudioClip(Blip);
-            return true;
+            Fired = true;
         }
-        return false;
+        else if (e.type == EventType.Repaint && IsMouseDown
+                 && rect.Contains(e.mousePosition) && Now >= NextRepeatTime)
+        {
+            NextRepeatTime = Now + 0.09f;
+            Fired = true;
+        }
+
+        if (Fired) ResourceUtil.PlayAudioClip(Blip);
+        return Fired;
     }
 
     static void Field(string Name, ref float Property, float min, int max, float x, ref float y, float rowHeight, float increments, bool IsBool, ref Event e)
@@ -60,10 +50,11 @@ public static class CustomNightPanel
 
         float RightShift = 90;
 
+        int HoldMultiplier = 1 << Math.Min((int)(MouseCurrentHold / 0.5f), 6);
 
         if (Button("-", new Rect(x + 80 + RightShift, y, 25, rowHeight), e))
         {
-            Property = Mathf.Max(min, Property - (Input.GetKey(KeyCode.LeftShift) ? increments * 5 : increments));
+            Property = Mathf.Max(min, Property - (Input.GetKey(KeyCode.LeftShift) ? increments * 5 : increments) * HoldMultiplier);
         }
 
         if (!IsBool) GUI.Label(new Rect(x + 110 + RightShift, y, 50, rowHeight), (Property == -1) ? "Default" : Property.ToString());
@@ -72,7 +63,7 @@ public static class CustomNightPanel
 
         if (Button("+", new Rect(x + 160 + RightShift, y, 25, rowHeight), e))
         {
-            Property = Mathf.Min(max, Property + (Input.GetKey(KeyCode.LeftShift) ? increments * 5 : increments));
+            Property = Mathf.Min(max, Property + (Input.GetKey(KeyCode.LeftShift) ? increments * 5 : increments) * HoldMultiplier);
         }
 
         y += rowHeight;
@@ -140,9 +131,9 @@ public static class CustomNightPanel
         {
             GUI.Box(new Rect(x, y, width, rowHeight * (AiUtil.AnimatronicIDs.Length + 2)), "Custom Night - POWER");
             y += rowHeight * 2;
-            Field("Starting power", ref NightSettings.StartingPower, 1, 9999, x, ref y, rowHeight, 5, false, ref e);
-            Field("Max power", ref NightSettings.MaxPower, 1, 9999, x, ref y, rowHeight, 5, false, ref e);
-            Field("Starting reserve", ref NightSettings.StartingReserveEnergy, 0, 9999, x, ref y, rowHeight, 5, false, ref e);
+            Field("Starting power", ref NightSettings.StartingPower, 0, 10000, x, ref y, rowHeight, 5, false, ref e);
+            Field("Max power", ref NightSettings.MaxPower, 0, 10000, x, ref y, rowHeight, 5, false, ref e);
+            Field("Starting reserve", ref NightSettings.StartingReserveEnergy, 0, 10000, x, ref y, rowHeight, 5, false, ref e);
         }
     }
 
