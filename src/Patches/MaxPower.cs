@@ -1,5 +1,8 @@
-using HarmonyLib;
+
 namespace CustomNight;
+
+using HarmonyLib;
+using static CustomNightManager; 
 
 [HarmonyPatch(typeof(PlayerBehaviour), nameof(PlayerBehaviour.ManagePower))]
 public static class ManagePowerPatch
@@ -19,15 +22,9 @@ public static class ManagePowerPatch
 
         Power -= UsageRate * Time.deltaTime * 0.14285715f;
 
-        if (Power > CustomNightPanel.MaxPower)
-        {
-            Power = CustomNightPanel.MaxPower;
-        }
+        if (Power > NightSettings.MaxPower) Power = NightSettings.MaxPower;
 
-        if (__instance.currentPower != null)
-        {
-            __instance.currentPower.Value = Power;
-        }
+        __instance.currentPower?.Value = Power;
 
         if (Power <= 0.0f && __instance.IsServer)
         {

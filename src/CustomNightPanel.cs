@@ -1,44 +1,19 @@
 namespace CustomNight;
+using static CustomNightManager;
 
 public static class CustomNightPanel
 {
-    public static float InfiniteEnergy = 0;
-    public static float NightTime = 6;
-    public static float[] SelectedAiLevels = [20, 20, 20, 20, 20, 20];
     public static bool Shown = false;
-    public static float StartingPower = 100;
-    public static float MaxPower = 100;
-    public static float GracePeriod = 7;
-
-    public static float StartingReserveEnergy = 0f;
-
-    public static float DisableWordle = 0f;
-    public static float ForceJanitorLMS = 0f;
-
-    public static float EarlyFreeEndo = 0f;
-
     private static float PressStartTime;
     private static bool IsMouseDown;
     private static float LastDuration;
     private static bool FirstHold;
-
     private static AudioClip Blip;
-
     public static CPanelTab CurrentPanel = CPanelTab.AI;
-
-
-
-    private static readonly AnimatronicID[] Ids =
-        (AnimatronicID[])Enum.GetValues(typeof(AnimatronicID));
-
-    public static float GetSelectedAiLevel(this AnimatronicID animid) => SelectedAiLevels[(int)animid];
-
-    public static bool GracePeriodPassed => GameManager.Instance?.currentGameTime.Value >= GracePeriod;
-
 
     static bool Button(string Content, Rect rect, Event e)
     {
-        if (Blip == null) Blip = ResourceUtil.GetEmbeddedAudioClip("CustomNight.assets.blip.wav");
+        Blip ??= ResourceUtil.GetEmbeddedAudioClip("CustomNight.assets.blip.wav");
 
         GUI.Box(rect, Content);
         if (e.type == EventType.MouseDown && e.button == 0)
@@ -138,40 +113,37 @@ public static class CustomNightPanel
 
         if (CurrentPanel == CPanelTab.AI)
         {
-            GUI.Box(new Rect(x, y, width, rowHeight * (Ids.Length + 2)), "Custom Night - AI");
+            GUI.Box(new Rect(x, y, width, rowHeight * (AiUtil.AnimatronicIDs.Length + 2)), "Custom Night - AI");
             y += rowHeight * 2;
-            for (int i = 0; i < Ids.Length; i++)
+            for (int i = 0; i < AiUtil.AnimatronicIDs.Length; i++)
             {
-                AnimatronicID id = Ids[i];
+                AnimatronicID id = AiUtil.AnimatronicIDs[i];
                 int index = (int)id;
 
-                Field(id.ToString() + " AI", ref SelectedAiLevels[index], -1, 100, x, ref y, rowHeight, 1, false, ref e);
+                Field(id.ToString() + " AI", ref NightSettings.SelectedAiLevels[index], -1, 100, x, ref y, rowHeight, 1, false, ref e);
             }
         }
 
         if (CurrentPanel == CPanelTab.General)
         {
-            GUI.Box(new Rect(x, y, width, rowHeight * (Ids.Length + 2)), "Custom Night - GENERAL");
+            GUI.Box(new Rect(x, y, width, rowHeight * (AiUtil.AnimatronicIDs.Length + 2)), "Custom Night - GENERAL");
             y += rowHeight * 2;
-            Field("Inf energy", ref InfiniteEnergy, 0, 1, x, ref y, rowHeight, 1, true, ref e);
-            Field("Night minutes", ref NightTime, 1, 360, x, ref y, rowHeight, 1, false, ref e);
-            Field("Grace period", ref GracePeriod, 1, 30, x, ref y, rowHeight, 1, false, ref e);
-            Field("Disable wordle", ref DisableWordle, 0, 1, x, ref y, rowHeight, 1, true, ref e);
-            Field("Force janitor lms", ref ForceJanitorLMS, 0, 1, x, ref y, rowHeight, 1, true, ref e);
-            Field("Endo roam early", ref EarlyFreeEndo, 0, 1, x, ref y, rowHeight, 1, true, ref e);
+            Field("Inf energy", ref NightSettings.InfiniteEnergy, 0, 1, x, ref y, rowHeight, 1, true, ref e);
+            Field("Disable wordle", ref NightSettings.DisableWordle, 0, 1, x, ref y, rowHeight, 1, true, ref e);
+            Field("Force janitor lms", ref NightSettings.ForceJanitorLMS, 0, 1, x, ref y, rowHeight, 1, true, ref e);
+            Field("Endo roam early", ref NightSettings.EarlyFreeEndo, 0, 1, x, ref y, rowHeight, 1, true, ref e);
+            Field("Night minutes", ref NightSettings.NightTime, 1, 360, x, ref y, rowHeight, 1, false, ref e);
+            Field("Grace period", ref NightSettings.GracePeriod, 1, 30, x, ref y, rowHeight, 1, false, ref e);
         }
 
         if (CurrentPanel == CPanelTab.Power)
         {
-            GUI.Box(new Rect(x, y, width, rowHeight * (Ids.Length + 2)), "Custom Night - POWER");
+            GUI.Box(new Rect(x, y, width, rowHeight * (AiUtil.AnimatronicIDs.Length + 2)), "Custom Night - POWER");
             y += rowHeight * 2;
-            Field("Starting power", ref StartingPower, 1, 9999, x, ref y, rowHeight, 5, false, ref e);
-            Field("Max power", ref MaxPower, 1, 9999, x, ref y, rowHeight, 5, false, ref e);
-            Field("Starting reserve", ref StartingReserveEnergy, 0, 9999, x, ref y, rowHeight, 5, false, ref e);
+            Field("Starting power", ref NightSettings.StartingPower, 1, 9999, x, ref y, rowHeight, 5, false, ref e);
+            Field("Max power", ref NightSettings.MaxPower, 1, 9999, x, ref y, rowHeight, 5, false, ref e);
+            Field("Starting reserve", ref NightSettings.StartingReserveEnergy, 0, 9999, x, ref y, rowHeight, 5, false, ref e);
         }
-
-
-
     }
 
     public enum CPanelTab
