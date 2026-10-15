@@ -10,7 +10,6 @@ namespace CustomNight;
 public static class BuildInfo
 {
     public const string Name = "CustomNight"; // Name of the Mod.
-    public const string Description = "Adds custom night."; // Description for the Mod. 
     public const string Author = "BrightVoid"; // Author of the Mod.
     public const string Version = "1.12.0"; // Version of the Mod.
 }

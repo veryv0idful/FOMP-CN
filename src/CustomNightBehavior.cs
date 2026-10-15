@@ -14,10 +14,8 @@ namespace CustomNight;
 [RegisterTypeInIl2Cpp]
 #endif
 
-public class CustomNightBehaviour : MonoBehaviour
+public class CustomNightBehaviour(IntPtr handle) : MonoBehaviour(handle)
 {
-    public CustomNightBehaviour(IntPtr handle) : base(handle) { }
-
     private void Awake()
     {
         SceneManager.add_sceneLoaded((UnityAction<Scene, LoadSceneMode>)OnSceneLoaded);

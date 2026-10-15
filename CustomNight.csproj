@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
-    <Configurations>Debug;Release;MELON;BEPIN</Configurations>
+    <Configurations>MELON;BEPIN</Configurations>
     <Platforms>AnyCPU</Platforms>
 
     <BEPINEX>$(MSBuildProjectDirectory)/lib/BepInEx</BEPINEX>
@@ -18,7 +18,7 @@
   </PropertyGroup>
 
 
-  <ItemGroup Condition="'$(Configuration)'=='MELON' Or '$(Configuration)'=='Debug'">
+  <ItemGroup Condition="'$(Configuration)'=='MELON'">
     <Reference Include="MelonLoader">
       <HintPath>$(MELONLOADER)/net6/MelonLoader.dll</HintPath>
       <Private>false</Private>
@@ -65,7 +65,7 @@
   </ItemGroup>
 
 
-  <ItemGroup Condition="'$(Configuration)'=='BEPIN' Or '$(Configuration)'=='Release'">
+  <ItemGroup Condition="'$(Configuration)'=='BEPIN'">
     <Reference Include="BepInEx.Core">
       <HintPath>$(BEPINEX)/core/BepInEx.Core.dll</HintPath>
       <Private>false</Private>
@@ -122,12 +122,12 @@
     </Reference>
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='MELON' Or '$(Configuration)'=='Debug'">
+  <PropertyGroup Condition="'$(Configuration)'=='MELON'">
     <DefineConstants>MELON</DefineConstants>
     <AssemblyName>CustomNight_MELON</AssemblyName>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='BEPIN' Or '$(Configuration)'=='Release'">
+  <PropertyGroup Condition="'$(Configuration)'=='BEPIN'">
     <DefineConstants>BEPIN</DefineConstants>
     <AssemblyName>CustomNight_BEPINEX</AssemblyName>
   </PropertyGroup>
