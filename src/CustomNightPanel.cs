@@ -4,66 +4,66 @@ using static CustomNightManager;
 
 public static class CustomNightPanel
 {
-    public static bool Shown = false;
-    private static bool IsMouseDown;
-    static float PressStart;
-    static float NextRepeatTime;
-    public static float MouseCurrentHold => IsMouseDown ? Time.realtimeSinceStartup - PressStart : 0f;
-    private static AudioClip Blip;
+    public static bool Shown;
+    private static bool _isMouseDown;
+    private static float _pressStart;
+    private static float _nextRepeatTime;
+    public static float MouseCurrentHold => _isMouseDown ? Time.realtimeSinceStartup - _pressStart : 0f;
+    private static AudioClip _blip;
     public static CPanelTab CurrentPanel = CPanelTab.AI;
 
-    static bool Button(string Content, Rect rect, Event e)
+    static bool Button(string content, Rect rect, Event e)
     {
-        if (!Blip) Blip = ResourceUtil.GetEmbeddedAudioClip("CustomNight.assets.blip.wav");
+        if (!_blip) _blip = ResourceUtil.GetEmbeddedAudioClip("CustomNight.assets.blip.wav");
 
-        GUI.Box(rect, Content);
+        GUI.Box(rect, content);
 
-        float Now = Time.realtimeSinceStartup;
-        bool Fired = false;
+        float now = Time.realtimeSinceStartup;
+        bool fired = false;
 
         if (e.rawType == EventType.MouseUp && e.button == 0)
         {
-            IsMouseDown = false;
+            _isMouseDown = false;
         }
         else if (e.type == EventType.MouseDown && e.button == 0 && rect.Contains(e.mousePosition))
         {
-            IsMouseDown = true;
-            PressStart = Now;
-            NextRepeatTime = Now + 0.5f;
+            _isMouseDown = true;
+            _pressStart = now;
+            _nextRepeatTime = now + 0.5f;
             e.Use();
-            Fired = true;
+            fired = true;
         }
-        else if (e.type == EventType.Repaint && IsMouseDown
-                 && rect.Contains(e.mousePosition) && Now >= NextRepeatTime)
+        else if (e.type == EventType.Repaint && _isMouseDown
+                 && rect.Contains(e.mousePosition) && now >= _nextRepeatTime)
         {
-            NextRepeatTime = Now + 0.09f;
-            Fired = true;
+            _nextRepeatTime = now + 0.09f;
+            fired = true;
         }
 
-        if (Fired) ResourceUtil.PlayAudioClip(Blip);
-        return Fired;
+        if (fired) ResourceUtil.PlayAudioClip(_blip);
+        return fired;
     }
 
-    static void Field(string Name, ref float Property, float min, int max, float x, ref float y, float rowHeight, float increments, bool IsBool, ref Event e)
+    static void Field(string name, ref float property, float min, int max, float x, ref float y, float rowHeight, float increments, bool isBool, ref Event e)
     {
-        GUI.Label(new Rect(x + 10, y, 150, rowHeight), Name);
+        GUI.Label(new Rect(x + 10, y, 150, rowHeight), name);
 
-        float RightShift = 90;
+        float rightShift = 90;
 
-        int HoldMultiplier = 1 << Math.Min((int)(MouseCurrentHold / 0.5f), 6);
+        int holdMultiplier = 1 << Math.Min((int)(MouseCurrentHold / 0.5f), 6);
 
-        if (Button("-", new Rect(x + 80 + RightShift, y, 25, rowHeight), e))
+        if (Button("-", new Rect(x + 80 + rightShift, y, 25, rowHeight), e))
         {
-            Property = Mathf.Max(min, Property - (Input.GetKey(KeyCode.LeftShift) ? increments * 5 : increments) * HoldMultiplier);
+            property = Mathf.Max(min, property - (Input.GetKey(KeyCode.LeftShift) ? increments * 5 : increments) * holdMultiplier);
         }
 
-        if (!IsBool) GUI.Label(new Rect(x + 110 + RightShift, y, 50, rowHeight), (Property == -1) ? "Default" : Property.ToString());
-        else GUI.Label(new Rect(x + 120 + RightShift, y, 50, rowHeight), Property == 1 ? "True" : "False");
+        if (!isBool) GUI.Label(new Rect(x + 110 + rightShift, y, 50, rowHeight), (property == -1) ? "Default" : property.ToString());
+        else GUI.Label(new Rect(x + 120 + rightShift, y, 50, rowHeight), property == 1 ? "True" : "False");
 
 
-        if (Button("+", new Rect(x + 160 + RightShift, y, 25, rowHeight), e))
+        if (Button("+", new Rect(x + 160 + rightShift, y, 25, rowHeight), e))
         {
-            Property = Mathf.Min(max, Property + (Input.GetKey(KeyCode.LeftShift) ? increments * 5 : increments) * HoldMultiplier);
+            property = Mathf.Min(max, property + (Input.GetKey(KeyCode.LeftShift) ? increments * 5 : increments) * holdMultiplier);
         }
 
         y += rowHeight;
@@ -85,8 +85,8 @@ public static class CustomNightPanel
         Event e = Event.current;
         GUI.color = new Color(1f, 1f, 1f, 1f);
 
-        float ButtonX = (Screen.width - 25) / 2f;
-        if (Button("<size=20><</size>", new Rect(ButtonX - width / 2.5f, y, 25, rowHeight), e))
+        float buttonX = (Screen.width - 25) / 2f;
+        if (Button("<size=20><</size>", new Rect(buttonX - width / 2.5f, y, 25, rowHeight), e))
         {
             var values = (CPanelTab[])Enum.GetValues(typeof(CPanelTab));
             int index = Array.IndexOf(values, CurrentPanel);
@@ -94,7 +94,7 @@ public static class CustomNightPanel
             CurrentPanel = values[index];
         }
 
-        if (Button("<size=20>></size>", new Rect(ButtonX + width / 2.5f, y, 25, rowHeight), e))
+        if (Button("<size=20>></size>", new Rect(buttonX + width / 2.5f, y, 25, rowHeight), e))
         {
             var values = (CPanelTab[])Enum.GetValues(typeof(CPanelTab));
             int index = Array.IndexOf(values, CurrentPanel);
@@ -123,7 +123,7 @@ public static class CustomNightPanel
             Field("Grace period", ref NightSettings.GracePeriod, 1, 30, x, ref y, rowHeight, 1, false, ref e);
             Field("Inf energy", ref NightSettings.InfiniteEnergy, 0, 1, x, ref y, rowHeight, 1, true, ref e);
             Field("Disable wordle", ref NightSettings.DisableWordle, 0, 1, x, ref y, rowHeight, 1, true, ref e);
-            Field("Force janitor lms", ref NightSettings.ForceJanitorLMS, 0, 1, x, ref y, rowHeight, 1, true, ref e);
+            Field("Force janitor lms", ref NightSettings.ForceJanitorLms, 0, 1, x, ref y, rowHeight, 1, true, ref e);
             Field("Endo roam early", ref NightSettings.EarlyFreeEndo, 0, 1, x, ref y, rowHeight, 1, true, ref e);
         }
 

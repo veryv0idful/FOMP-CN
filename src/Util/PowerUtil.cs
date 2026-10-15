@@ -2,14 +2,14 @@ namespace CustomNight;
 
 public static class PowerUtil
 {
-    public static void SetReservePower(float Reserve)
+    public static void SetReservePower(float reserve)
     {
         PowerGenerator.Instance.reserve.WritePerm = Unity.Netcode.NetworkVariableWritePermission.Server;
-        PowerGenerator.Instance.reserve.Value = Reserve;
+        PowerGenerator.Instance.reserve.Value = reserve;
     }
 
-    public static void SetPower(this PlayerBehaviour Player, float Power)
+    public static void SetPower(this PlayerBehaviour player, float power)
     {
-        Player.currentPower.Value = Power;
+        player.currentPower.Value = power;
     }
 }

@@ -16,7 +16,7 @@ public static class CustomNightManager
     if (!IsHost) yield break;
     while (!IsPlaying) yield return null;
 
-    foreach (AnimatronicID AnimID in AiUtil.AnimatronicIDs) AnimID.SetCustomAiLevel(AnimID.GetSelectedAiLevel());
+    foreach (AnimatronicID animID in AiUtil.AnimatronicIDs) animID.SetCustomAiLevel(animID.GetSelectedAiLevel());
 
     SetNightProperties();
     DebugLogs();
@@ -33,12 +33,12 @@ public static class CustomNightManager
 
     GameManager.Instance.gameEndTime.Value = NightSettings.NightTime * 60;
 
-    foreach (PlayerRoles Role in PlayerRoleManager.Instance.participatingPlayers)
+    foreach (PlayerRoles role in PlayerRoleManager.Instance.participatingPlayers)
     {
-      if (Role == PlayerRoles.PurpleGuy || Role == PlayerRoles.None) continue;
+      if (role == PlayerRoles.PurpleGuy || role == PlayerRoles.None) continue;
 
-      PlayerBehaviour Player = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
-      Player.SetPower(NightSettings.StartingPower);
+      PlayerBehaviour player = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(role);
+      player.SetPower(NightSettings.StartingPower);
     }
 
     if (NightSettings.DisableWordle == 1) WordleSystem.Instance.gameState.Value = WordleSystem.WordleGameState.Loss;
@@ -50,22 +50,22 @@ public static class CustomNightManager
     if (PowerGenerator.Instance.reserve.Value < NightSettings.StartingReserveEnergy && !GracePeriodPassed && NightSettings.StartingReserveEnergy != 0)
       PowerUtil.SetReservePower(NightSettings.StartingReserveEnergy);
 
-    if (NightSettings.ForceJanitorLMS == 1 && PlayerRoleManager.Instance.CountPlayersAlive() > 1)
+    if (NightSettings.ForceJanitorLms == 1 && PlayerRoleManager.Instance.CountPlayersAlive() > 1)
       PlayerRoleManager.Instance.janitorBehaviour.oxygenLevels.Value = 300;
 
 
-    foreach (AnimatronicID AnimID in AiUtil.AnimatronicIDs)
+    foreach (AnimatronicID animID in AiUtil.AnimatronicIDs)
     {
-      if (AnimID.GetSelectedAiLevel() == -1) continue;
-      Animatronic Animatronic = AnimID.GetAnimatronicFromID();
+      if (animID.GetSelectedAiLevel() == -1) continue;
+      Animatronic animatronic = animID.GetAnimatronicFromID();
 
-      if (AnimID == AnimatronicID.Freddy)
+      if (animID == AnimatronicID.Freddy)
       {
-        NetworkVariable<float> Wind = GlobalCameraSystem.Instance.freddyMusicWind;
-        Wind.Value = Mathf.Min(AiUtil.GetMaxFreddyWind(AnimID.GetSelectedAiLevel()), Wind.Value);
+        NetworkVariable<float> wind = GlobalCameraSystem.Instance.freddyMusicWind;
+        wind.Value = Mathf.Min(AiUtil.GetMaxFreddyWind(animID.GetSelectedAiLevel()), wind.Value);
       }
 
-      if (Animatronic.timeLeftToMove.Value > AnimID.GetMaxMovementCoolDownFromAI(AnimID.GetSelectedAiLevel()) && GracePeriodPassed) Animatronic.timeLeftToMove.Value = AnimID.GetMaxMovementCoolDownFromAI(AnimID.GetSelectedAiLevel());
+      if (animatronic.timeLeftToMove.Value > animID.GetMaxMovementCoolDownFromAI(animID.GetSelectedAiLevel()) && GracePeriodPassed) animatronic.timeLeftToMove.Value = animID.GetMaxMovementCoolDownFromAI(animID.GetSelectedAiLevel());
     }
 
     if (NightSettings.InfiniteEnergy == 1 && PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value != 800)
@@ -73,43 +73,43 @@ public static class CustomNightManager
       PlayerRoleManager.Instance.purpleGuyBehaviour.energy.Value = 800;
     }
 
-    foreach (PlayerRoles Role in PlayerRoleManager.Instance.participatingPlayers)
+    foreach (PlayerRoles role in PlayerRoleManager.Instance.participatingPlayers)
     {
-      if (Role == PlayerRoles.PurpleGuy || Role == PlayerRoles.None) continue;
-      PlayerBehaviour PlayerBehaviour = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(Role);
-      PlayerBehaviour.currentPower.Value = Mathf.Min(PlayerBehaviour.currentPower.Value, NightSettings.MaxPower);
+      if (role == PlayerRoles.PurpleGuy || role == PlayerRoles.None) continue;
+      PlayerBehaviour playerBehaviour = PlayerRoleManager.Instance.GetPlayerBehaviourFromRole(role);
+      playerBehaviour.currentPower.Value = Mathf.Min(playerBehaviour.currentPower.Value, NightSettings.MaxPower);
     }
 
-    Zap Endo = AnimatronicManager.Instance.zap;
+    Zap endo = AnimatronicManager.Instance.zap;
 
-    if (Endo.enabled == true && NightSettings.EarlyFreeEndo == 1) Endo.isApproachingPlayer.Value = false;
-    if (Endo.enabled == false) Endo.moveSpeed = 0;
+    if (endo.enabled == true && NightSettings.EarlyFreeEndo == 1) endo.isApproachingPlayer.Value = false;
+    if (endo.enabled == false) endo.moveSpeed = 0;
   }
 
-  public static void SetCustomAiLevel(this AnimatronicID AnimID, float AI)
+  public static void SetCustomAiLevel(this AnimatronicID animID, float ai)
   {
-    if (AI == -1) return;
-    Animatronic Animatronic = AnimID.GetAnimatronicFromID();
+    if (ai == -1) return;
+    Animatronic animatronic = animID.GetAnimatronicFromID();
 
 #if MELON
-    Melon<CustomNightCore>.Logger.Msg($"SET {AnimID.ToString()} AI {AI} || MOVEMENT {AiUtil.GetMovementCoolDownFromAI(AnimID, AI)}s");
+    Melon<CustomNightCore>.Logger.Msg($"SET {animID.ToString()} AI {ai} || MOVEMENT {AiUtil.GetMovementCoolDownFromAI(animID, ai)}s");
 #endif
 
-    if (AI == 0)
+    if (ai == 0)
     {
-      Animatronic.enabled = false;
+      animatronic.enabled = false;
 
-      if (!Animatronic.IsZap) Animatronic.Disable();
+      if (!animatronic.IsZap) animatronic.Disable();
     }
 
-    if (AnimID == AnimatronicID.Foxy)
+    if (animID == AnimatronicID.Foxy)
     {
-      Animatronic.TryCast<Foxy>().currentAttackAttempt.Value = AiUtil.GetFoxyPreAttacks(AI);
+      animatronic.TryCast<Foxy>().currentAttackAttempt.Value = AiUtil.GetFoxyPreAttacks(ai);
     }
 
-    Animatronic.currentDifficulty.Value = AI;
-    Animatronic.currentMovementWaitTime.Value = AnimID.GetMovementCoolDownFromAI(AI);
-    Animatronic.timeLeftToMove.Value = Mathf.Max(AnimID.GetMaxMovementCoolDownFromAI(AI), NightSettings.GracePeriod);
+    animatronic.currentDifficulty.Value = ai;
+    animatronic.currentMovementWaitTime.Value = animID.GetMovementCoolDownFromAI(ai);
+    animatronic.timeLeftToMove.Value = Mathf.Max(animID.GetMaxMovementCoolDownFromAI(ai), NightSettings.GracePeriod);
   }
 
   public static void InitInvalidNight()

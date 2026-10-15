@@ -10,7 +10,7 @@ public sealed class CustomNightSettings
     public float StartingReserveEnergy = 0f;
     public float InfiniteEnergy = 0f;
     public float DisableWordle = 0f;
-    public float ForceJanitorLMS = 0f;
+    public float ForceJanitorLms = 0f;
     public float EarlyFreeEndo = 0f;
 }
 

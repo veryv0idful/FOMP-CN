@@ -1,39 +1,40 @@
 
-namespace CustomNight;
-
 using HarmonyLib;
+
+namespace CustomNight.Patches;
+
 using static CustomNightManager; 
 
 [HarmonyPatch(typeof(PlayerBehaviour), nameof(PlayerBehaviour.ManagePower))]
 public static class ManagePowerPatch
 {
-    private static bool Prefix(PlayerBehaviour __instance)
+    private static bool Prefix(PlayerBehaviour instance)
     {
-        var IsPoweredOn = __instance.isPlayerPoweredOn?.Value ?? false;
-        var IsAlive = __instance.isPlayerAlive?.Value ?? false;
+        var isPoweredOn = instance.isPlayerPoweredOn?.Value ?? false;
+        var isAlive = instance.isPlayerAlive?.Value ?? false;
 
-        if (!IsPoweredOn || !IsAlive) return false;
+        if (!isPoweredOn || !isAlive) return false;
         
 
-        __instance.UpdatePowerUsage();
+        instance.UpdatePowerUsage();
 
-        float Power = __instance.currentPower?.Value ?? 100f;
-        float UsageRate = __instance.currentPowerUsage?.Value ?? 1f;
+        float power = instance.currentPower?.Value ?? 100f;
+        float usageRate = instance.currentPowerUsage?.Value ?? 1f;
 
-        Power -= UsageRate * Time.deltaTime * 0.14285715f;
+        power -= usageRate * Time.deltaTime * 0.14285715f;
 
-        if (Power > NightSettings.MaxPower) Power = NightSettings.MaxPower;
+        if (power > NightSettings.MaxPower) power = NightSettings.MaxPower;
 
-        __instance.currentPower?.Value = Power;
+        instance.currentPower?.Value = power;
 
-        if (Power <= 0.0f && __instance.IsServer)
+        if (power <= 0.0f && instance.IsServer)
         {
-            __instance.isPlayerPoweredOn.Value = false;
-            __instance.currentPower.Value = 0.0f;
+            instance.isPlayerPoweredOn.Value = false;
+            instance.currentPower.Value = 0.0f;
 
             
-            GameManager.Instance.OnPlayerPowerDownServerRpc(__instance.playerRole);
-            PurpleGuy.Instance.OnPlayerPowerDownServerRpc(__instance.playerRole);
+            GameManager.Instance.OnPlayerPowerDownServerRpc(instance.playerRole);
+            PurpleGuy.Instance.OnPlayerPowerDownServerRpc(instance.playerRole);
         }
         return false;
     }

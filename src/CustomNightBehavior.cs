@@ -61,12 +61,12 @@ public class CustomNightBehaviour(IntPtr handle) : MonoBehaviour(handle)
     }
 
     [HideFromIl2Cpp]
-    private void StartCoroutine(IEnumerator Coroutine)
+    private void StartCoroutine(IEnumerator coroutine)
     {
 #if BEPIN
-        StartCoroutine(Coroutine.WrapToIl2Cpp());
+        StartCoroutine(coroutine.WrapToIl2Cpp());
 #elif MELON
-        MelonCoroutines.Start(Coroutine);
+        MelonCoroutines.Start(coroutine);
 #endif
     }
 }
