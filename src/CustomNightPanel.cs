@@ -14,7 +14,7 @@ public static class CustomNightPanel
 
     static bool Button(string Content, Rect rect, Event e)
     {
-        Blip ??= ResourceUtil.GetEmbeddedAudioClip("CustomNight.assets.blip.wav");
+        if (!Blip) Blip = ResourceUtil.GetEmbeddedAudioClip("CustomNight.assets.blip.wav");
 
         GUI.Box(rect, Content);
 
