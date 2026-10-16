@@ -22,7 +22,7 @@ public class CustomNightCore : MelonMod
     {
         Il2CppInterop.Runtime.Injection.ClassInjector.RegisterTypeInIl2Cpp<CustomNightBehaviour>();
 
-        var go = new GameObject("[CustomNight_Runner]");
+        GameObject go = new GameObject("[CustomNight_Runner]");
         UnityEngine.Object.DontDestroyOnLoad(go);
         go.AddComponent<CustomNightBehaviour>();
     }

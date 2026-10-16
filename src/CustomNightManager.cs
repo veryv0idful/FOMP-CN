@@ -24,7 +24,7 @@ public static class CustomNightManager
     yield return new WaitForSeconds(NightSettings.GracePeriod);
     if (!IsPlayingAsHost) yield break;
 
-    if (!AnimatronicManager.Instance.CanFindNightData(GameManager.Instance.gameNight, "Freddy", out var _)) InitInvalidNight();
+    if (!AnimatronicManager.Instance.CanFindNightData(GameManager.Instance.gameNight, "Freddy", out AnimatronicData _)) InitInvalidNight();
   }
 
   private static void SetNightProperties()
@@ -124,15 +124,15 @@ public static class CustomNightManager
       else
         anim.gameplayLoop = anim.StartCoroutine(anim.GameplayLoop());
     }
+  }
 
-    static void InitialiseSpecial(Animatronic anim)
+  private static void InitialiseSpecial(Animatronic anim)
+  {
+    anim.Initialise();
+
+    if (anim.enabled && anim.IsZap)
     {
-      anim.Initialise();
-
-      if (anim.enabled && anim.IsZap)
-      {
-        if (NightSettings.EarlyFreeEndo == 1) anim.gameplayLoop ??= anim.StartCoroutine(anim.GameplayLoop());
-      }
+      if (NightSettings.EarlyFreeEndo == 1) anim.gameplayLoop ??= anim.StartCoroutine(anim.GameplayLoop());
     }
   }
 

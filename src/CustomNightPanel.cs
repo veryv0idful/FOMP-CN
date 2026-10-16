@@ -88,7 +88,7 @@ public static class CustomNightPanel
         float buttonX = (Screen.width - 25) / 2f;
         if (Button("<size=20><</size>", new Rect(buttonX - width / 2.5f, y, 25, rowHeight), e))
         {
-            var values = (CPanelTab[])Enum.GetValues(typeof(CPanelTab));
+            CPanelTab[] values = (CPanelTab[])Enum.GetValues(typeof(CPanelTab));
             int index = Array.IndexOf(values, CurrentPanel);
             index = (index + -1 + values.Length) % values.Length;
             CurrentPanel = values[index];
@@ -96,7 +96,7 @@ public static class CustomNightPanel
 
         if (Button("<size=20>></size>", new Rect(buttonX + width / 2.5f, y, 25, rowHeight), e))
         {
-            var values = (CPanelTab[])Enum.GetValues(typeof(CPanelTab));
+            CPanelTab[] values = (CPanelTab[])Enum.GetValues(typeof(CPanelTab));
             int index = Array.IndexOf(values, CurrentPanel);
             index = (index + 1 + values.Length) % values.Length;
             CurrentPanel = values[index];

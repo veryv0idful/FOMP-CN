@@ -10,8 +10,8 @@ public static class ManagePowerPatch
 {
     private static bool Prefix(PlayerBehaviour instance)
     {
-        var isPoweredOn = instance.isPlayerPoweredOn?.Value ?? false;
-        var isAlive = instance.isPlayerAlive?.Value ?? false;
+        bool isPoweredOn = instance.isPlayerPoweredOn?.Value ?? false;
+        bool isAlive = instance.isPlayerAlive?.Value ?? false;
 
         if (!isPoweredOn || !isAlive) return false;
         
