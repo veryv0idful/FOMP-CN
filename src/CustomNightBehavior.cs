@@ -23,14 +23,6 @@ public class CustomNightBehaviour(IntPtr handle) : MonoBehaviour(handle)
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F2) && SceneManager.GetActiveScene().name == "Lobby")
-        {
-            if (MultiplayerManager.Instance && MultiplayerManager.Instance.IsHost)
-            {
-                CustomNightPanel.ToggleShown();
-            }
-        }
-
         if (Input.GetKeyDown(KeyCode.F4) && GameManager.Instance && GameManager.Instance.IsHost)
         {
             GameManager.Instance.BackToLobby();
@@ -38,15 +30,7 @@ public class CustomNightBehaviour(IntPtr handle) : MonoBehaviour(handle)
 
         CustomNightManager.OnUpdateFixes();
     }
-
-    private void OnGUI()
-    {
-        if (CustomNightPanel.Shown)
-        {
-            CustomNightPanel.Draw();
-        }
-    }
-
+    
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "Game")
