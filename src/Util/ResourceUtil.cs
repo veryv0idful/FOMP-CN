@@ -1,5 +1,6 @@
 using System.IO;
 using System.Reflection;
+using Object = UnityEngine.Object;
 
 public static class ResourceUtil
 {
@@ -73,16 +74,10 @@ public static class ResourceUtil
         return audioClip;
     }
 
-    public static AudioClip GetEmbeddedAudioClip(string resourceName, string clipName = "EmbeddedAudio")
-    {
-        return WavToAudioClip(GetEmbeddedWavBytes(resourceName), clipName);
-    }
+    public static AudioClip GetEmbeddedAudioClip(string resourceName, string clipName = "EmbeddedAudio") => WavToAudioClip(GetEmbeddedWavBytes(resourceName), clipName);
 
     public static void PlayAudioClip(AudioClip clip)
     {
-    if (clip == null) return;
-
-    Vector3 listenerPos = Camera.main != null ? Camera.main.transform.position : Vector3.zero;
-    AudioSource.PlayClipAtPoint(clip, listenerPos, 1.0f);
+        AudioSource.PlayClipAtPoint(clip, new Vector3(0, 1, -10));
     }
 }
