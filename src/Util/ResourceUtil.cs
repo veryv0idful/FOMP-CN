@@ -1,28 +1,25 @@
+using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Object = UnityEngine.Object;
 
 public static class ResourceUtil
 {
-    public static byte[] GetEmbeddedWavBytes(string resourceName)
+    public static byte[] GetEmbeddedFileBytes(string resourceName)
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
-
-        // Note: Assembly resource names are formatted as: <DefaultNamespace>.<FolderPath>.<FileName>
-        // e.g., "MyMelonMod.Resources.your_audio.wav"
         using Stream stream = assembly.GetManifestResourceStream(resourceName);
-        if (stream == null)
-        {
-#if MELON
-            MelonLogger.Error($"Resource '{resourceName}' not found!");
-#endif
-            return null;
-        }
+        if (stream == null) return null;
 
         byte[] buffer = new byte[stream.Length];
         stream.Read(buffer, 0, buffer.Length);
         return buffer;
     }
+    
     public static AudioClip WavToAudioClip(byte[] wavBytes, string clipName = "EmbeddedAudio")
     {
         if (wavBytes == null || wavBytes.Length < 44) return null;
@@ -74,10 +71,143 @@ public static class ResourceUtil
         return audioClip;
     }
 
-    public static AudioClip GetEmbeddedAudioClip(string resourceName, string clipName = "EmbeddedAudio") => WavToAudioClip(GetEmbeddedWavBytes(resourceName), clipName);
+    public static AudioClip GetEmbeddedAudioClip(string resourceName, string clipName = "EmbeddedAudio") => WavToAudioClip(GetEmbeddedFileBytes(resourceName), clipName);
+    
+    
 
     public static void PlayAudioClip(AudioClip clip)
     {
         AudioSource.PlayClipAtPoint(clip, new Vector3(0, 1, -10));
+    }
+    
+
+public static Texture2D LoadEmbeddedTexture(string resourceName)
+{
+    byte[] png = GetEmbeddedFileBytes(resourceName);
+    if (png == null) return null;
+
+    byte[] rgba = DecodePng(png, out int w, out int h);
+    if (rgba == null) return null;
+
+    var texture = new Texture2D(w, h, TextureFormat.RGBA32, false);
+    texture.hideFlags = HideFlags.HideAndDontSave;
+
+    GCHandle pin = GCHandle.Alloc(rgba, GCHandleType.Pinned);
+    try { texture.LoadRawTextureData(pin.AddrOfPinnedObject(), rgba.Length); }
+    finally { pin.Free(); }
+
+    texture.Apply(false, false);
+    return texture;
+}
+
+static byte[] DecodePng(byte[] png, out int w, out int h)
+{
+    w = h = 0;
+    int colorType = -1, bitDepth = 0, interlace = 0;
+    var idat = new MemoryStream();
+
+    int pos = 8; // skip signature
+    while (pos + 8 <= png.Length)
+    {
+        int len = (png[pos] << 24) | (png[pos + 1] << 16) | (png[pos + 2] << 8) | png[pos + 3];
+        string type = Encoding.ASCII.GetString(png, pos + 4, 4);
+        int data = pos + 8;
+
+        if (type == "IHDR")
+        {
+            w = (png[data] << 24) | (png[data + 1] << 16) | (png[data + 2] << 8) | png[data + 3];
+            h = (png[data + 4] << 24) | (png[data + 5] << 16) | (png[data + 6] << 8) | png[data + 7];
+            bitDepth = png[data + 8];
+            colorType = png[data + 9];
+            interlace = png[data + 12];
+        }
+        else if (type == "IDAT") idat.Write(png, data, len);
+        else if (type == "IEND") break;
+
+        pos = data + len + 4; // skip data + CRC
+    }
+
+    if (bitDepth != 8 || interlace != 0 || (colorType != 2 && colorType != 6)) return null;
+
+    int ch = colorType == 6 ? 4 : 3;
+    int stride = w * ch;
+
+    idat.Position = 2; // skip zlib header
+    byte[] raw = new byte[(stride + 1) * h];
+    using (var ds = new DeflateStream(idat, CompressionMode.Decompress))
+    {
+        int read = 0;
+        while (read < raw.Length)
+        {
+            int n = ds.Read(raw, read, raw.Length - read);
+            if (n <= 0) break;
+            read += n;
+        }
+        if (read < raw.Length) return null;
+    }
+
+    // Unfilter
+    byte[] rec = new byte[stride * h];
+    for (int y = 0; y < h; y++)
+    {
+        int filter = raw[y * (stride + 1)];
+        int src = y * (stride + 1) + 1;
+        int cur = y * stride;
+        int prev = (y - 1) * stride;
+
+        for (int i = 0; i < stride; i++)
+        {
+            int x = raw[src + i];
+            int a = i >= ch ? rec[cur + i - ch] : 0;
+            int b = y > 0 ? rec[prev + i] : 0;
+            int c = (y > 0 && i >= ch) ? rec[prev + i - ch] : 0;
+
+            switch (filter)
+            {
+                case 1: x += a; break;
+                case 2: x += b; break;
+                case 3: x += (a + b) >> 1; break;
+                case 4:
+                    int p = a + b - c;
+                    int pa = Math.Abs(p - a), pb = Math.Abs(p - b), pc = Math.Abs(p - c);
+                    x += (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c);
+                    break;
+            }
+            rec[cur + i] = (byte)x;
+        }
+    }
+
+    // To RGBA, flipping rows (Unity is bottom-up)
+    byte[] outPix = new byte[w * h * 4];
+    for (int y = 0; y < h; y++)
+    {
+        int s = y * stride;
+        int d = (h - 1 - y) * w * 4;
+        for (int x = 0; x < w; x++)
+        {
+            outPix[d + x * 4]     = rec[s + x * ch];
+            outPix[d + x * 4 + 1] = rec[s + x * ch + 1];
+            outPix[d + x * 4 + 2] = rec[s + x * ch + 2];
+            outPix[d + x * 4 + 3] = ch == 4 ? rec[s + x * ch + 3] : (byte)255;
+        }
+    }
+    return outPix;
+}
+
+    public static Sprite LoadEmbeddedSprite(string resourceName)
+    {
+        Texture2D texture = LoadEmbeddedTexture(resourceName);
+        if (texture == null) return null;
+
+        Sprite sprite = Sprite.Create(
+            texture,
+            new Rect(0, 0, texture.width, texture.height),
+            new Vector2(0.5f, 0.5f),
+            100f
+        );
+
+        texture.hideFlags = HideFlags.HideAndDontSave;
+        sprite.hideFlags = HideFlags.HideAndDontSave;
+        return sprite;
     }
 }

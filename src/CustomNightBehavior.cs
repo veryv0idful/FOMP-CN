@@ -19,6 +19,12 @@ public class CustomNightBehaviour(IntPtr handle) : MonoBehaviour(handle)
     private void Awake()
     {
         SceneManager.add_sceneLoaded((UnityAction<Scene, LoadSceneMode>)OnSceneLoaded);
+        CustomNightPanel.Init();
+        
+        foreach (string res in System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames())
+        {
+            MelonLogger.Msg("Found embedded resource: " + res);
+        }
     }
 
     private void Update()
@@ -36,11 +42,6 @@ public class CustomNightBehaviour(IntPtr handle) : MonoBehaviour(handle)
         if (scene.name == "Game")
         {
             StartCoroutine(CustomNightManager.SetUpCustomNight());
-        }
-
-        if (scene.name != "Lobby" || !MultiplayerManager.Instance || !MultiplayerManager.Instance.IsHost)
-        {
-            CustomNightPanel.Shown = false;
         }
     }
 

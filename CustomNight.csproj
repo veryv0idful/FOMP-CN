@@ -61,6 +61,15 @@
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
       <HintPath>$(MELONLOADER)/Il2CppAssemblies/UnityEngine.AudioModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(MELONLOADER)/Il2CppAssemblies/UnityEngine.UIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(MELONLOADER)/Il2CppAssemblies/UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 
@@ -119,7 +128,17 @@
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
       <HintPath>$(BEPINEX)/interop/UnityEngine.AudioModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(BEPINEX)/interop/UnityEngine.UIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(BEPINEX)/interop/UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='MELON'">
@@ -136,6 +155,17 @@
 
   <ItemGroup>
     <EmbeddedResource Include="assets\blip.wav" />
+    <EmbeddedResource Include="assets\bonnie.png"/>
+    <EmbeddedResource Include="assets\chica.png"/>
+    <EmbeddedResource Include="assets\freddy.png"/>
+    <EmbeddedResource Include="assets\foxy.png"/>
+    
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <Folder Include="assets\Images\" />
   </ItemGroup>
 
 </Project>
