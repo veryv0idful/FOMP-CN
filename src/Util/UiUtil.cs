@@ -32,6 +32,7 @@ public static class UiUtil
     {
         GameObject go = CreateChildUIObject(parent, name);
         Text text = go.AddComponent<Text>();
+        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         text.text = value;
         text.fontSize = fontSize;
         text.color = Color.white;

@@ -20,11 +20,6 @@ public class CustomNightBehaviour(IntPtr handle) : MonoBehaviour(handle)
     {
         SceneManager.add_sceneLoaded((UnityAction<Scene, LoadSceneMode>)OnSceneLoaded);
         CustomNightPanel.Init();
-        
-        foreach (string res in System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames())
-        {
-            MelonLogger.Msg("Found embedded resource: " + res);
-        }
     }
 
     private void Update()

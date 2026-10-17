@@ -27,15 +27,13 @@ public static class ManagePowerPatch
 
         __instance.currentPower?.Value = power;
 
-        if (power <= 0.0f && __instance.IsServer)
-        {
-            __instance.isPlayerPoweredOn.Value = false;
-            __instance.currentPower.Value = 0.0f;
+        if (!(power <= 0.0f) || !__instance.IsServer) return false;
+        __instance.isPlayerPoweredOn.Value = false;
+        __instance.currentPower.Value = 0.0f;
 
             
-            GameManager.Instance.OnPlayerPowerDownServerRpc(__instance.playerRole);
-            PurpleGuy.Instance.OnPlayerPowerDownServerRpc(__instance.playerRole);
-        }
+        GameManager.Instance.OnPlayerPowerDownServerRpc(__instance.playerRole);
+        PurpleGuy.Instance.OnPlayerPowerDownServerRpc(__instance.playerRole);
         return false;
     }
 }

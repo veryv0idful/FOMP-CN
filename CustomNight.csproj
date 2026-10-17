@@ -71,6 +71,10 @@
       <HintPath>$(MELONLOADER)/Il2CppAssemblies/UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(MELONLOADER)/Il2CppAssemblies/UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
 
@@ -133,9 +137,13 @@
     <Reference Include="UnityEngine.UIModule">
       <HintPath>$(BEPINEX)/interop/UnityEngine.UIModule.dll</HintPath>
       <Private>false</Private>
-    </Reference>
+    </Reference> 
     <Reference Include="UnityEngine.ImageConversionModule">
       <HintPath>$(BEPINEX)/interop/UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>false</Private> 
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(BEPINEX)/interop/UnityEngine.TextRenderingModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     

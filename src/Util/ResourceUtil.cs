@@ -72,7 +72,7 @@ public static class ResourceUtil
     
     
 
-    public static void PlayAudioClip(AudioClip clip)
+    public static void PlayAudioClip(this AudioClip clip)
     {
         AudioSource.PlayClipAtPoint(clip, new Vector3(0, 1, -10));
     }
@@ -103,7 +103,7 @@ static byte[] DecodePng(byte[] png, out int w, out int h)
     int colorType = -1, bitDepth = 0, interlace = 0;
     var idat = new MemoryStream();
 
-    int pos = 8; // skip signature
+    int pos = 8;
     while (pos + 8 <= png.Length)
     {
         int len = (png[pos] << 24) | (png[pos + 1] << 16) | (png[pos + 2] << 8) | png[pos + 3];
@@ -121,7 +121,7 @@ static byte[] DecodePng(byte[] png, out int w, out int h)
         else if (type == "IDAT") idat.Write(png, data, len);
         else if (type == "IEND") break;
 
-        pos = data + len + 4; // skip data + CRC
+        pos = data + len + 4;
     }
 
     if (bitDepth != 8 || interlace != 0 || (colorType != 2 && colorType != 6)) return null;
@@ -129,7 +129,7 @@ static byte[] DecodePng(byte[] png, out int w, out int h)
     int ch = colorType == 6 ? 4 : 3;
     int stride = w * ch;
 
-    idat.Position = 2; // skip zlib header
+    idat.Position = 2;
     byte[] raw = new byte[(stride + 1) * h];
     using (var ds = new DeflateStream(idat, CompressionMode.Decompress))
     {
@@ -142,8 +142,7 @@ static byte[] DecodePng(byte[] png, out int w, out int h)
         }
         if (read < raw.Length) return null;
     }
-
-    // Unfilter
+    
     byte[] rec = new byte[stride * h];
     for (int y = 0; y < h; y++)
     {
@@ -173,8 +172,7 @@ static byte[] DecodePng(byte[] png, out int w, out int h)
             rec[cur + i] = (byte)x;
         }
     }
-
-    // To RGBA, flipping rows (Unity is bottom-up)
+    
     byte[] outPix = new byte[w * h * 4];
     for (int y = 0; y < h; y++)
     {
