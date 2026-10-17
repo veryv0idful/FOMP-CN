@@ -1,11 +1,8 @@
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Object = UnityEngine.Object;
 
 public static class ResourceUtil
 {

@@ -155,11 +155,11 @@
 
   <ItemGroup>
     <EmbeddedResource Include="assets\blip.wav" />
-    <EmbeddedResource Include="assets\bonnie.png"/>
-    <EmbeddedResource Include="assets\chica.png"/>
-    <EmbeddedResource Include="assets\freddy.png"/>
-    <EmbeddedResource Include="assets\foxy.png"/>
-    
+    <EmbeddedResource Include="assets\Bonnie.png" />
+    <EmbeddedResource Include="assets\Chica.png" />
+    <EmbeddedResource Include="assets\Freddy.png" />
+    <EmbeddedResource Include="assets\Foxy.png" />
+    <EmbeddedResource Include="assets\Zap.png" />
   </ItemGroup>
 
 

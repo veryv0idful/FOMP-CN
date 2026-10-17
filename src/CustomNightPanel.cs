@@ -1,3 +1,4 @@
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace CustomNight;
@@ -43,11 +44,9 @@ public class CustomNightPanel(IntPtr handle) : MonoBehaviour(handle)
         
         Image background = RootCanvas.transform.CreateImageChildObject("BackGround");
         RectTransform rect = background.GetComponent<RectTransform>();
-
-        background.sprite = ResourceUtil.LoadEmbeddedSprite("CustomNight.assets.bonnie.png");
         
-        background.type = Image.Type.Simple;
-        background.color = Color.white;
+        background.color = Color.gray;
+        background.sprite = ResourceUtil.LoadEmbeddedSprite("CustomNight.assets.Zap.png");
 
         rect.SetAnchors(new Vector2(0.2f, 0.2f), new Vector2(0.8f, 0.8f));
         
@@ -56,7 +55,9 @@ public class CustomNightPanel(IntPtr handle) : MonoBehaviour(handle)
 
     private void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.F2)) Shown = !Shown;
+        if (SceneManager.GetActiveScene().name != "Lobby" || MultiplayerManager.Instance?.IsHost != true) Shown = false;
+        RootCanvas.enabled = Shown;
     }
 
     private void Awake()
