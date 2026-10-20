@@ -195,6 +195,7 @@ public class CustomNightPanel(IntPtr handle) : MonoBehaviour(handle)
 
         void Step(float heldTime, int dir)
         {
+            if ((get() == max && dir > 0) || (get() == min && dir < 0)) return;
             int holdMultiplier = 1 << Math.Min((int)(heldTime / 0.5f), 6);
             MelonLogger.Msg(holdMultiplier);
             float baseStep = Input.GetKey(KeyCode.LeftShift) ? increment * 5 : increment;
