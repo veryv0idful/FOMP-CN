@@ -12,8 +12,8 @@ public static class AiUtil
             AnimatronicID.Bonnie => 6f * Mathf.Exp(-0.0203f * ai),
             AnimatronicID.Chica => 7f * Mathf.Exp(-0.0254f * ai),
             AnimatronicID.Foxy => 10f * Mathf.Exp(-0.0445f * ai),
-            AnimatronicID.Zap => 15f * Mathf.Exp(-0.0602f * ai),
-            AnimatronicID.Golden => 20f * Mathf.Exp(-0.0756f * ai),
+            AnimatronicID.Endo => 15f * Mathf.Exp(-0.0602f * ai),
+            AnimatronicID.GoldenFreddy => 20f * Mathf.Exp(-0.0756f * ai),
             _ => 10f,
         };
     }
@@ -21,7 +21,6 @@ public static class AiUtil
     public static float GetMaxMovementCoolDownFromAI(this AnimatronicID animid,float ai) => animid.GetMovementCoolDownFromAI(ai) * 3;
     public static float GetMaxFreddyWind(float freddyAI) => freddyAI <= 20 ? 1 : Mathf.Max(1f - Mathf.Floor(freddyAI / 20f) / 5f, 0.2f);
     public static int GetFoxyPreAttacks(float ai) => Mathf.Max(Mathf.FloorToInt(ai / 100 * 8) - 1, 0);
-    public static AnimatronicID GetIdFromAnimatronic(this Animatronic animatronic) => Enum.Parse<AnimatronicID>(animatronic.name,false);
     public static Animatronic GetAnimatronicFromID(this AnimatronicID animid) => AnimatronicManager.Instance?.Animatronics[(int)animid];
     public static readonly AnimatronicID[] AnimatronicIDs = (AnimatronicID[])Enum.GetValues(typeof(AnimatronicID));
 
@@ -34,6 +33,6 @@ public enum AnimatronicID
     Bonnie,
     Chica,
     Foxy,
-    Zap,
-    Golden
+    Endo,
+    GoldenFreddy
 }

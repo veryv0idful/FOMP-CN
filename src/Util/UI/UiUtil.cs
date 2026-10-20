@@ -4,17 +4,16 @@ namespace CustomNight.Util.UI;
 
 public static class UiUtil
 {
-    public static GameObject CreateUIObject(this Transform parent, string name)
+    public static RectTransform CreateUIObject(this Transform parent, string name)
     {
         GameObject go = new(name);
         go.transform.SetParent(parent, false);
-        go.AddComponent<RectTransform>();
-        return go;
+        return  go.AddComponent<RectTransform>();
     }
 
     public static Image CreateImage(this Transform parent, string name, Color? color = null)
     {
-        GameObject go = CreateUIObject(parent, name);
+        GameObject go = CreateUIObject(parent, name).gameObject;
         Image img = go.AddComponent<Image>();
         if (color.HasValue) img.color = color.Value;
         return img;
@@ -33,7 +32,7 @@ public static class UiUtil
 
     public static Text CreateText(this Transform parent, string name, string value, int fontSize = 14)
     {
-        GameObject go = CreateUIObject(parent, name);
+        GameObject go = CreateUIObject(parent, name).gameObject;
         Text text = go.AddComponent<Text>();
         text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         text.text = value;
