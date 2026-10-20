@@ -1,11 +1,10 @@
-using UnityEngine;
 using UnityEngine.UI;
 
-namespace CustomNight;
+namespace CustomNight.Util.UI;
 
 public static class UiUtil
 {
-    public static GameObject CreateChildUIObject(this Transform parent, string name)
+    public static GameObject CreateUIObject(this Transform parent, string name)
     {
         GameObject go = new(name);
         go.transform.SetParent(parent, false);
@@ -13,24 +12,28 @@ public static class UiUtil
         return go;
     }
 
-    public static Image CreateImageChildObject(this Transform parent, string name, Color? color = null)
+    public static Image CreateImage(this Transform parent, string name, Color? color = null)
     {
-        GameObject go = CreateChildUIObject(parent, name);
+        GameObject go = CreateUIObject(parent, name);
         Image img = go.AddComponent<Image>();
         if (color.HasValue) img.color = color.Value;
         return img;
     }
     
-    public static Button CreateButtonChildObject(this Transform parent, string name)
+    public static Button CreateButton(this Transform parent, string name,string content = "",int contentFontsSize = 40)
     {
-        GameObject go = CreateChildUIObject(parent, name);
-        go.AddComponent<Image>();
+        GameObject go = CreateImage(parent, name).gameObject;
+        Text text = go.transform.CreateText("content",content,contentFontsSize);
+        text.alignment = TextAnchor.MiddleCenter;
+        text.rectTransform.SetAnchors(Vector2.zero, Vector2.one);
+        
         return go.AddComponent<Button>();
     }
+    
 
-    public static Text CreateTextChildObject(this Transform parent, string name, string value, int fontSize = 14)
+    public static Text CreateText(this Transform parent, string name, string value, int fontSize = 14)
     {
-        GameObject go = CreateChildUIObject(parent, name);
+        GameObject go = CreateUIObject(parent, name);
         Text text = go.AddComponent<Text>();
         text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         text.text = value;

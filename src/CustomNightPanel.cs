@@ -1,3 +1,5 @@
+using CustomNight.Util;
+using CustomNight.Util.UI;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -21,7 +23,6 @@ public class CustomNightPanel(IntPtr handle) : MonoBehaviour(handle)
     private CanvasScaler _canvasScalar;
     private GraphicRaycaster _canvasRayCaster;
     public Text TabTitle { get; private set; }
-    private RectTransform _content;
 
     public Tab CurrentTab { get; private set; } = Tab.General;
     public bool Shown { get; private set; } = false;
@@ -48,42 +49,35 @@ public class CustomNightPanel(IntPtr handle) : MonoBehaviour(handle)
         _canvasScalar.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
         _canvasScalar.matchWidthOrHeight = 0.5f;
         
-        Image background = RootTransform.CreateImageChildObject("BackGround");
+        Image background = RootTransform.CreateImage("BackGround");
         background.rectTransform.SetAnchors(new Vector2(0.2f, 0.2f), new Vector2(0.8f, 0.8f));
 
         
         background.color = Color.gray;
         background.sprite = ResourceUtil.LoadEmbeddedSprite("CustomNight.assets.Zap.png");
         
-        Image titleBackGround = background.transform.CreateImageChildObject("Tab Title Background", new Color(0f, 0f, 0f, 0.6f));
+        Image titleBackGround = background.transform.CreateImage("Tab Title Background", new Color(0f, 0f, 0f, 0.6f));
         titleBackGround.rectTransform.pivot = new Vector2(0.5f, 1);
         titleBackGround.rectTransform.SetAnchors(new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, -100), new Vector2(0, 0));
 
-        TabTitle = titleBackGround.transform.CreateTextChildObject("Tab Title", CurrentTab.ToString(),48);
+        TabTitle = titleBackGround.transform.CreateText("Tab Title", CurrentTab.ToString(),48);
         TabTitle.rectTransform.SetAnchors(Vector2.zero, Vector2.one); 
         TabTitle.alignment = TextAnchor.MiddleCenter;
         
-        
-        Button leftButton = titleBackGround.transform.CreateButtonChildObject("Prev Button");
+        Button leftButton = titleBackGround.transform.CreateButton("Prev Button","<", 40);
         leftButton.GetComponent<RectTransform>().SetAnchors(new Vector2(0, 0), new Vector2(0, 1), new Vector2(10, 10), new Vector2(90, -10));
         leftButton.GetComponent<Image>().color = new Color(1, 1, 1, 0.2f);
-        Text leftLabel = leftButton.transform.CreateTextChildObject("Label", "<", 40);
-        leftLabel.rectTransform.SetAnchors(Vector2.zero, Vector2.one);
-        leftLabel.alignment = TextAnchor.MiddleCenter;
 
-        Button rightButton = titleBackGround.transform.CreateButtonChildObject("Next Button");
+        Button rightButton = titleBackGround.transform.CreateButton("Next Button",">", 40);
         rightButton.GetComponent<RectTransform>().SetAnchors(new Vector2(1, 0), new Vector2(1, 1), new Vector2(-90, 10), new Vector2(-10, -10));
         rightButton.GetComponent<Image>().color = new Color(1, 1, 1, 0.2f);
-        Text rightLabel = rightButton.transform.CreateTextChildObject("Label", ">", 40);
-        rightLabel.rectTransform.SetAnchors(Vector2.zero, Vector2.one);
-        rightLabel.alignment = TextAnchor.MiddleCenter;
-
+        
 
         Action prev = () => SwitchTab(false);
         Action next = () => SwitchTab(true);
 
-        leftButton.onClick.AddListener(prev);
-        rightButton.onClick.AddListener(next);
+        leftButton.AddHoldRepeat(prev);
+        rightButton.AddHoldRepeat(next);
     }
     public void SwitchTab(bool next)
     {

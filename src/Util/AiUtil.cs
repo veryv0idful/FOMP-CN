@@ -1,4 +1,4 @@
-namespace CustomNight;
+namespace CustomNight.Util;
 
 public static class AiUtil
 {

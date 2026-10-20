@@ -1,4 +1,6 @@
 using System.Collections;
+using CustomNight.Util;
+
 namespace CustomNight;
 
 public static class CustomNightManager

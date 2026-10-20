@@ -4,6 +4,9 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
+namespace CustomNight.Util;
+
+
 public static class ResourceUtil
 {
     public static byte[] GetEmbeddedFileBytes(string resourceName)
@@ -86,7 +89,7 @@ public static Texture2D LoadEmbeddedTexture(string resourceName)
     byte[] rgba = DecodePng(png, out int w, out int h);
     if (rgba == null) return null;
 
-    var texture = new Texture2D(w, h, TextureFormat.RGBA32, false);
+    Texture2D texture = new Texture2D(w, h, TextureFormat.RGBA32, false);
     texture.hideFlags = HideFlags.HideAndDontSave;
 
     GCHandle pin = GCHandle.Alloc(rgba, GCHandleType.Pinned);
@@ -101,7 +104,7 @@ static byte[] DecodePng(byte[] png, out int w, out int h)
 {
     w = h = 0;
     int colorType = -1, bitDepth = 0, interlace = 0;
-    var idat = new MemoryStream();
+    MemoryStream idat = new MemoryStream();
 
     int pos = 8;
     while (pos + 8 <= png.Length)
@@ -131,7 +134,7 @@ static byte[] DecodePng(byte[] png, out int w, out int h)
 
     idat.Position = 2;
     byte[] raw = new byte[(stride + 1) * h];
-    using (var ds = new DeflateStream(idat, CompressionMode.Decompress))
+    using (DeflateStream ds = new DeflateStream(idat, CompressionMode.Decompress))
     {
         int read = 0;
         while (read < raw.Length)
