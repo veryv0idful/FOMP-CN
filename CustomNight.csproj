@@ -168,6 +168,7 @@
     <EmbeddedResource Include="assets\Freddy.png" />
     <EmbeddedResource Include="assets\Foxy.png" />
     <EmbeddedResource Include="assets\Zap.png" />
+    <EmbeddedResource Include="assets\Golden.png" />
   </ItemGroup>
 
 

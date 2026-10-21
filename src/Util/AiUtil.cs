@@ -12,8 +12,8 @@ public static class AiUtil
             AnimatronicID.Bonnie => 6f * Mathf.Exp(-0.0203f * ai),
             AnimatronicID.Chica => 7f * Mathf.Exp(-0.0254f * ai),
             AnimatronicID.Foxy => 10f * Mathf.Exp(-0.0445f * ai),
-            AnimatronicID.Endo => 15f * Mathf.Exp(-0.0602f * ai),
-            AnimatronicID.GoldenFreddy => 20f * Mathf.Exp(-0.0756f * ai),
+            AnimatronicID.Zap => 15f * Mathf.Exp(-0.0602f * ai),
+            AnimatronicID.Golden => 20f * Mathf.Exp(-0.0756f * ai),
             _ => 10f,
         };
     }
@@ -33,6 +33,6 @@ public enum AnimatronicID
     Bonnie,
     Chica,
     Foxy,
-    Endo,
-    GoldenFreddy
+    Zap,
+    Golden
 }

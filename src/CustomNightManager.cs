@@ -10,6 +10,9 @@ public static class CustomNightManager
   public static bool IsPlaying => GameManager.Instance && GameManager.Instance.isPlaying;
   public static bool IsPlayingAsHost => IsHost && IsPlaying;
   public static float GetSelectedAiLevel(this AnimatronicID animid) => NightSettings.SelectedAiLevels[(int)animid];
+  public static void SetSelectedAI(this AnimatronicID animid,float AILevel) => NightSettings.SelectedAiLevels[(int)animid] = AILevel;
+  
+
   public static bool GracePeriodPassed => GameManager.Instance.currentGameTime.Value >= NightSettings.GracePeriod;
   public static CustomNightSettings NightSettings { get; private set; } = new();
 
