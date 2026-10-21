@@ -1,4 +1,7 @@
 ﻿
+using CustomNight.Util.UI;
+using Il2CppInterop.Runtime.Injection;
+
 #if MELON
 [assembly: MelonInfo(typeof(CustomNight.CustomNightCore), CustomNight.BuildInfo.Name, CustomNight.BuildInfo.Version, CustomNight.BuildInfo.Author)]
 #elif BEPIN
@@ -9,9 +12,9 @@ namespace CustomNight;
 
 public static class BuildInfo
 {
-    public const string Name = "CustomNight"; // Name of the Mod.
-    public const string Author = "BrightVoid"; // Author of the Mod.
-    public const string Version = "1.12.0"; // Version of the Mod.
+    public const string Name = "CustomNight";
+    public const string Author = "BrightVoid";
+    public const string Version = "1.13.0";
 }
 
 
@@ -34,6 +37,9 @@ public class CustomNightCore : BasePlugin
 {
     public override void Load()
     {
+        ClassInjector.RegisterTypeInIl2Cpp<CustomNightBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<CustomNightPanel>();
+        ClassInjector.RegisterTypeInIl2Cpp<HoldRepeat>();
         AddComponent<CustomNightBehaviour>();
     }
 }
