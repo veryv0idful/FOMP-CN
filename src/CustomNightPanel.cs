@@ -140,22 +140,20 @@ public class CustomNightPanel(IntPtr handle) : MonoBehaviour(handle)
                 _contentlayout.childForceExpandHeight = true;
                 RectTransform AnimatronicsContent = Content.CreateUIObject("AnimatronicsContent");
                 
-                HorizontalLayoutGroup animatronicLayOut = AnimatronicsContent.gameObject.AddComponent<HorizontalLayoutGroup>();
+                GridLayoutGroup animatronicLayOut = AnimatronicsContent.gameObject.AddComponent<GridLayoutGroup>();
                 animatronicLayOut.padding = new RectOffset
                 {
                     left = 10,
                     right = 10,
-                    top = 10,
+                    top = 5,
                     bottom = 10
                 };
-                
-                animatronicLayOut.spacing = 5;
-                animatronicLayOut.childAlignment = TextAnchor.UpperLeft;
-                animatronicLayOut.childControlWidth = true;
-                animatronicLayOut.childControlHeight = true;
-                animatronicLayOut.childForceExpandHeight = false;
-                animatronicLayOut.childForceExpandWidth = true;
+                animatronicLayOut.spacing = new Vector2(5, 5);
                 animatronicLayOut.childAlignment = TextAnchor.UpperCenter;
+                
+                animatronicLayOut.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+                animatronicLayOut.constraintCount = 3;
+                animatronicLayOut.cellSize = new Vector2(190f, 250f);
                 
                 foreach (AnimatronicID animatronicID in AiUtil.AnimatronicIDs) BuildAnimatronicField(animatronicLayOut.transform,animatronicID);
                 break;
@@ -175,8 +173,6 @@ public class CustomNightPanel(IntPtr handle) : MonoBehaviour(handle)
         Image Icon = root.CreateImage("Icon");
         Icon.rectTransform.SetAnchors(new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, -200), new Vector2(0, -50));
         Icon.sprite = ResourceUtil.LoadEmbeddedSprite($"CustomNight.assets.{animatronicID.ToString()}.png");
-        
-        int index = (int)animatronicID;
 
         float get() => animatronicID.GetSelectedAiLevel();
         void set(float AI) => animatronicID.SetSelectedAI(AI);
