@@ -18,22 +18,36 @@ public static class ManagePowerPatch
 
         __instance.UpdatePowerUsage();
 
-        float power = __instance.currentPower?.Value ?? 100f;
+        float power = __instance.server_currentPower;
         float usageRate = __instance.currentPowerUsage?.Value ?? 1f;
 
         power -= usageRate * Time.deltaTime * 0.14285715f;
 
         if (power > NightSettings.MaxPower) power = NightSettings.MaxPower;
 
-        __instance.currentPower?.Value = power;
+        __instance.server_currentPower = power;
 
         if (!(power <= 0.0f) || !__instance.IsServer) return false;
         __instance.isPlayerPoweredOn.Value = false;
-        __instance.currentPower.Value = 0.0f;
+        __instance.server_currentPower = 0.0f;
 
             
         GameManager.Instance.OnPlayerPowerDownServerRpc(__instance.playerRole);
         PurpleGuy.Instance.OnPlayerPowerDownServerRpc(__instance.playerRole);
+        return false;
+    }
+}
+
+
+[HarmonyPatch(typeof(PlayerBehaviour), nameof(PlayerBehaviour.Server_RemovePower))]
+public static class RemovePowerPatch
+{
+    private static bool Prefix(PlayerBehaviour __instance, float value)
+    {
+        if (__instance.server_currentPower > NightSettings.MaxPower)
+            __instance.server_currentPower = NightSettings.MaxPower;
+        __instance.server_currentPower -= value;
+        
         return false;
     }
 }

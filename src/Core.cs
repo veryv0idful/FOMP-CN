@@ -14,7 +14,7 @@ public static class BuildInfo
 {
     public const string Name = "CustomNight";
     public const string Author = "BrightVoid";
-    public const string Version = "1.13.0";
+    public const string Version = "1.14.0";
 }
 
 

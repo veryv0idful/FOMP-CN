@@ -1,3 +1,4 @@
+using System.Reflection;
 using CustomNight.Util;
 using CustomNight.Util.UI;
 using UnityEngine.SceneManagement;
@@ -105,6 +106,22 @@ public class CustomNightPanel(IntPtr handle) : MonoBehaviour(handle)
         _blip.PlayAudioClip();
         RefreshContent(); 
     }
+    
+    private void BuildSettingsForTab(Tab tab)
+    {
+        _contentlayout.childForceExpandHeight = false;
+
+        foreach ((FieldInfo field, SettingAttribute attr) in CustomNightSettings.Settings)
+        {
+            if (attr.Tab != tab) continue;
+
+            FieldInfo f = field;
+            BuildField(Content.transform, attr.Name,
+                () => (float)f.GetValue(NightSettings)!,
+                v => f.SetValue(NightSettings, v),
+                attr.Min, attr.Max, attr.Step, attr.Toggle);
+        }
+    }
 
     public void RefreshContent()
     { 
@@ -112,28 +129,9 @@ public class CustomNightPanel(IntPtr handle) : MonoBehaviour(handle)
         switch (CurrentTab)
         {
             case Tab.General:
-                _contentlayout.childForceExpandHeight = false;
-                BuildField(Content.transform, "Night minutes", () => NightSettings.NightTime,
-                    v => NightSettings.NightTime = v, 1, 360, 1);
-                BuildField(Content.transform, "Grace period", () => NightSettings.GracePeriod,
-                    v => NightSettings.GracePeriod = v, 1, 30, 1);
-                BuildField(Content.transform, "Infinite purple guy energy", () => NightSettings.InfiniteEnergy,
-                    v => NightSettings.InfiniteEnergy = v, 0, 1, 1, true);
-                BuildField(Content.transform, "Disable wordle", () => NightSettings.DisableWordle,
-                    v => NightSettings.DisableWordle = v, 0, 1, 1, true);
-                BuildField(Content.transform, "Force janitor last man standing", () => NightSettings.ForceJanitorLms,
-                    v => NightSettings.ForceJanitorLms = v, 0, 1, 1, true);
-                BuildField(Content.transform, "Let endo roam early <color=red>(unstable)</color>", () => NightSettings.EarlyFreeEndo,
-                    v => NightSettings.EarlyFreeEndo = v, 0, 1, 1, true);
-                break;
             case Tab.Power:
                 _contentlayout.childForceExpandHeight = false;
-                BuildField(Content.transform, "Starting power", () => NightSettings.StartingPower,
-                    v => NightSettings.StartingPower = v, 0, 10000, 5);
-                BuildField(Content.transform, "Max power", () => NightSettings.MaxPower, v => NightSettings.MaxPower = v, 0,
-                    10000, 5);
-                BuildField(Content.transform, "Starting generator reserve", () => NightSettings.StartingReserveEnergy,
-                    v => NightSettings.StartingReserveEnergy = v, 0, 10000, 5);
+                BuildSettingsForTab(CurrentTab);
                 break;
             case Tab.AI:
             {

@@ -19,7 +19,6 @@ public static class AiUtil
     }
 
     public static float GetMaxMovementCoolDownFromAI(this AnimatronicID animid,float ai) => animid.GetMovementCoolDownFromAI(ai) * 3;
-    public static float GetMaxFreddyWind(float freddyAI) => freddyAI <= 20 ? 1 : Mathf.Max(1f - Mathf.Floor(freddyAI / 20f) / 5f, 0.2f);
     public static int GetFoxyPreAttacks(float ai) => Mathf.Max(Mathf.FloorToInt(ai / 100 * 8) - 1, 0);
     public static Animatronic GetAnimatronicFromID(this AnimatronicID animid) => AnimatronicManager.Instance?.Animatronics[(int)animid];
     public static readonly AnimatronicID[] AnimatronicIDs = (AnimatronicID[])Enum.GetValues(typeof(AnimatronicID));
