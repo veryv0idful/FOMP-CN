@@ -14,7 +14,7 @@ public static class BuildInfo
 {
     public const string Name = "CustomNight";
     public const string Author = "BrightVoid";
-    public const string Version = "1.14.0";
+    public const string Version = "1.14.1";
 }
 
 
@@ -23,7 +23,7 @@ public class CustomNightCore : MelonMod
 {
     public override void OnInitializeMelon()
     {
-        Il2CppInterop.Runtime.Injection.ClassInjector.RegisterTypeInIl2Cpp<CustomNightBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<CustomNightBehaviour>();
 
         GameObject go = new GameObject("[CustomNight_Runner]");
         UnityEngine.Object.DontDestroyOnLoad(go);
